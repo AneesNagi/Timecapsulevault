@@ -1,0 +1,122 @@
+{
+  "name": "CryptoVault - Time Capsule Vaults",
+  "short_name": "CryptoVault",
+  "description": "Secure time-locked cryptocurrency vaults with advanced features",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#181a20",
+  "theme_color": "#7f5af0",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["finance", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Vault",
+      "short_name": "New Vault",
+      "description": "Create a new time-locked vault",
+      "url": "/create-vault",
+      "icons": [
+        {
+          "src": "/icons/shortcut-vault.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "My Vaults",
+      "short_name": "Vaults",
+      "description": "View your vaults",
+      "url": "/my-vaults",
+      "icons": [
+        {
+          "src": "/icons/shortcut-vaults.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Wallets",
+      "short_name": "Wallets",
+      "description": "Manage your wallets",
+      "url": "/wallet",
+      "icons": [
+        {
+          "src": "/icons/shortcut-wallet.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-dashboard.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Dashboard view on desktop"
+    },
+    {
+      "src": "/screenshots/mobile-vaults.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vaults view on mobile"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
+} 
