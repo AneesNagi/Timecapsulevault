@@ -15,7 +15,7 @@
 
 TimeCapsule CryptoVault helps you lock away cryptocurrency until specific conditions are met:
 - **Time Lock**: Release funds on a future date
-- **Price Lock**: Release when ETH reaches your target price
+- **Price Lock**: Release when specific Token reaches your target price
 - **Goal Lock**: Release when you've saved a target amount
 
 ### Prerequisites
@@ -229,7 +229,7 @@ Empty and unlocked vaults can be removed from your dashboard to keep it clean. T
 You can create and manage multiple wallets within the application. Each wallet can have its own vaults and operate independently.
 
 ### Network Selection
-Currently supports Sepolia testnet. Mainnet support coming soon.
+Currently supports Arbitrum Sepolia testnet. Mainnet support coming soon.
 
 ---
 

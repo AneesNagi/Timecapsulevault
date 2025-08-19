@@ -181,11 +181,9 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
       let transactions: Transaction[] = [];
       
       try {
-        // Use Etherscan/BSCScan API for better performance
-        const apiKey = network === 'sepolia' ? 'YourEtherscanApiKey' : 'YourBscScanApiKey';
-        const baseUrl = network === 'sepolia' 
-          ? 'https://api-sepolia.etherscan.io/api'
-          : 'https://api-testnet.bscscan.com/api';
+        // Use Arbitrum Sepolia API for better performance
+        const apiKey = 'YourArbiscanApiKey';
+        const baseUrl = 'https://api-sepolia.arbiscan.io/api';
         
         const response = await fetch(
           `${baseUrl}?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`
@@ -713,9 +711,7 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
                             variant="ghost"
                             color={textColor}
                             onClick={() => {
-                              const explorerUrl = network === 'sepolia' 
-                                ? `https://sepolia.etherscan.io/tx/${tx.hash}`
-                                : `https://testnet.bscscan.com/tx/${tx.hash}`;
+                              const explorerUrl = 'https://sepolia.arbiscan.io/tx/' + tx.hash;
                               window.open(explorerUrl, '_blank');
                             }}
                           />

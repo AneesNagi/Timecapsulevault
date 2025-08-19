@@ -14,7 +14,6 @@ import {
   Text,
   Button,
   SimpleGrid,
-  useColorModeValue,
   Center,
   Heading,
 } from '@chakra-ui/react';
@@ -34,9 +33,8 @@ export const MyVaults = () => {
   const [isCustomizationModalOpen, setIsCustomizationModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'timeline'>('grid');
 
-  const bgColor = useColorModeValue('var(--bg-primary)', 'var(--bg-primary)');
-  const textColor = useColorModeValue('var(--text-primary)', 'var(--text-primary)');
-  const mutedTextColor = useColorModeValue('var(--text-secondary)', 'var(--text-secondary)');
+  const textColor = 'var(--text-primary)';
+  const mutedTextColor = 'var(--text-secondary)';
 
   // Check if user has any wallets
   useEffect(() => {
@@ -204,7 +202,7 @@ export const MyVaults = () => {
   }
 
   return (
-    <Box bg={bgColor} minH="100vh" py={8}>
+    <Box className="gradient-bg" minH="100vh" py={8}>
       <VStack spacing={8} align="stretch">
         {/* Header with View Toggle */}
         <Box px={6}>

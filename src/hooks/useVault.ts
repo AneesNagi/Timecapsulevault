@@ -8,7 +8,6 @@ import {
 } from '../utils/contracts'
 import { getContractError } from '../utils/errors'
 import { SUPPORTED_NETWORKS } from '../constants/networks.js'
-import { rateLimitedRpcCall } from '../utils/rpc'
 import { useToast } from '@chakra-ui/react'
 import { NetworkContext } from '../components/DAppLayout'
 
@@ -79,15 +78,15 @@ export const useVault = () => {
             });
             
             // Test connection in background with rate limiting (optional)
-            rateLimitedRpcCall(async () => {
-              try {
-                await provider.getBlockNumber();
-                console.log('Provider connection test successful');
-              } catch (testError) {
-                console.warn('Provider connection test failed (non-critical):', testError);
-                // Don't fail initialization - manual operations can still work
-              }
-            });
+            // rateLimitedRpcCall(async () => {
+            //   try {
+            //     await provider.getBlockNumber();
+            //     console.log('Provider connection test successful');
+            //   } catch (testError) {
+            //     console.warn('Provider connection test failed (non-critical):', testError);
+            //     // Don't fail initialization - manual operations can still work
+            //   }
+            // });
             
             // Wallet initialization complete
           } catch (error) {
@@ -107,39 +106,54 @@ export const useVault = () => {
     const fetchCurrentEthPrice = async () => {
       if (!provider || !selectedNetwork) return;
 
-      try {
-        await rateLimitedRpcCall(async () => {
+      const fetchPrice = async () => {
+        try {
+          // await rateLimitedRpcCall(async () => {
           const priceFeedConfig = getCurrentEthPrice(selectedNetwork.chainId);
+          
+          // Check if we have a valid price feed address
+          if (!priceFeedConfig.address || priceFeedConfig.address === '0x0000000000000000000000000000000000000000') {
+            console.log('Price feed not configured yet - contracts need to be deployed');
+            return;
+          }
+          
           const priceFeed = new ethers.Contract(
-            priceFeedConfig.address,
+            priceFeedConfig.address as string,
             CHAINLINK_PRICE_FEED_ABI,
             provider
           );
           
           const priceData = await priceFeed.latestRoundData();
           setCurrentEthPrice(BigInt(priceData[1].toString()));
-        });
-      } catch (err) {
-        console.error('Error fetching current ETH price:', err);
-        // Don't set error for price feed issues as they're not critical for core functionality
+          // });
+        } catch (err) {
+          console.error('Error fetching current ETH price:', err);
+          // Don't set error for price feed issues as they're not critical for core functionality
+        }
+      };
+
+      if (provider && selectedNetwork) {
+        fetchPrice();
+        const interval = setInterval(fetchPrice, 60000); // Update every 60 seconds to reduce rate limiting
+        return () => clearInterval(interval);
       }
     };
 
-    if (provider && selectedNetwork) {
-      fetchCurrentEthPrice();
-      const interval = setInterval(fetchCurrentEthPrice, 60000); // Update every 60 seconds to reduce rate limiting
-      return () => clearInterval(interval);
-    }
+    fetchCurrentEthPrice();
   }, [provider, selectedNetwork]);
 
   const fetchVaultDetails = useCallback(async (vaultAddress: string): Promise<VaultData | null> => {
     if (!provider || !selectedWallet || !selectedNetwork) return null;
 
     try {
-      return await rateLimitedRpcCall(async () => {
+      // return await rateLimitedRpcCall(async () => {
         const vaultContract = new ethers.Contract(vaultAddress, TimeCapsuleVaultABI, provider);
         const priceFeedConfig = getCurrentEthPrice(selectedNetwork.chainId);
-        const priceFeed = new ethers.Contract(priceFeedConfig.address, CHAINLINK_PRICE_FEED_ABI, provider);
+        const priceFeed = new ethers.Contract(
+          priceFeedConfig.address as string,
+          CHAINLINK_PRICE_FEED_ABI,
+          provider
+        );
         
         // First try to get basic vault info
         const [balance, unlockTime, creator, actualTargetPrice] = await Promise.all([
@@ -212,39 +226,14 @@ export const useVault = () => {
           isLocked: isLocked,
           unlockReason: unlockReason,
         };
-      });
+      // });
     } catch (err) {
       // Only filter out specific errors that definitely indicate old/incompatible vaults
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      if (errorMessage.includes('missing revert data') && 
-          errorMessage.includes('CALL_EXCEPTION')) {
-        // These are definitely old vault contracts - skip them
-      return null;
+      if (err instanceof Error && err.message.includes('execution reverted')) {
+        console.log(`Vault ${vaultAddress} is not compatible with current interface`);
+        return null;
       }
-      
-      // For other errors (rate limits, network issues), log but don't filter out the vault
-      // This prevents vaults from disappearing due to temporary issues
-      console.warn(`Temporary error fetching vault ${vaultAddress}, will retry:`, errorMessage);
-      
-      // Return a minimal vault object to keep it visible
-      return {
-        address: vaultAddress,
-        balance: 0n,
-        unlockTime: 0n,
-        targetPrice: 0n,
-        goalAmount: 0n,
-        currentAmount: 0n,
-        progressPercentage: 0,
-        currentPrice: 0n,
-        remainingTime: 0,
-        creator: '',
-        isTimeLocked: false,
-        isPriceLocked: false,
-        isGoalLocked: false,
-        lockType: 'time' as const, // Use a valid lockType
-        isLocked: true,
-        unlockReason: 'Loading vault data...',
-      };
+      throw err;
     }
   }, [provider, selectedWallet]);
 
@@ -252,7 +241,7 @@ export const useVault = () => {
     if (!provider || !selectedWallet || !selectedNetwork) return null;
 
     try {
-      return await rateLimitedRpcCall(async () => {
+      // return await rateLimitedRpcCall(async () => {
         const vaultContract = new ethers.Contract(vaultAddress, ERC20TimeCapsuleVaultABI, provider);
         
         // Get basic vault info
@@ -358,7 +347,7 @@ export const useVault = () => {
           isLocked: isLocked,
           unlockReason: unlockReason,
         };
-      });
+      // });
     } catch (err) {
       console.warn(`Error fetching ERC-20 vault ${vaultAddress}:`, err);
       return null;
@@ -373,7 +362,7 @@ export const useVault = () => {
       setIsLoading(true);
       setError(null);
       try {
-        await rateLimitedRpcCall(async () => {
+        // await rateLimitedRpcCall(async () => {
           // First verify the contract exists
           const factoryConfig = getVaultFactoryContract(selectedNetwork.chainId);
           const code = await provider.getCode(factoryConfig.address);
@@ -451,7 +440,7 @@ export const useVault = () => {
             setVaults([]);
           }
           // If no valid vaults but we have addresses, keep existing vaults (rate limit/network issue scenario)
-        });
+        // });
       } catch (err) {
         console.error('Error loading all vaults:', err);
         setError(getContractError(err));
@@ -465,82 +454,63 @@ export const useVault = () => {
 
 
 
-  const createNewVault = async (
-    unlockTime: number,
-    targetPrice: number,
-    targetAmount: number = 0
-  ): Promise<string | undefined> => {
-    if (!signer || !provider || !selectedWallet) {
-      setError('No wallet selected');
-      return;
+  const createNewVault = useCallback(async (unlockTime: number, targetPrice: number, targetAmount: number): Promise<string> => {
+    if (!signer || !selectedNetwork || !selectedWallet) {
+      throw new Error('Wallet not connected or network not selected');
     }
 
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      console.log('Starting vault creation with params:', { unlockTime, targetPrice, targetAmount });
-      
-      return await rateLimitedRpcCall(async () => {
-        // First verify if the factory contract exists
-        const factoryConfig = getVaultFactoryContract(selectedNetwork.chainId);
-        const code = await provider.getCode(factoryConfig.address);
-        if (!code || code === '0x') {
-          setError(`Vault factory contract not deployed. Please deploy the contract first to ${selectedNetwork.name}.`);
-          return;
-        }
-
-        console.log('Contract exists, creating vault...');
-
-        // Create the vault
-        const factoryContract = new ethers.Contract(
-          factoryConfig.address,
-          VaultFactoryABI,
-          signer
-        );
-
-        const priceFeedConfig = getCurrentEthPrice(selectedNetwork.chainId);
-        console.log('Calling createVault with params:', [unlockTime, targetPrice, targetAmount, priceFeedConfig.address]);
-        
-        const tx = await factoryContract.createVault(
-          BigInt(unlockTime),
-          BigInt(targetPrice),
-          BigInt(targetAmount),
-          priceFeedConfig.address
-        );
-
-        console.log('Transaction submitted:', tx.hash);
-
-        // Wait for transaction to be mined
-        const receipt = await tx.wait();
-        console.log('Transaction confirmed:', receipt);
-
-        // Get the vault address by querying the contract directly
-        const userVaults = await factoryContract.getUserVaults(selectedWallet.address);
-        if (!userVaults || userVaults.length === 0) {
-          throw new Error('No vaults found after creation. Please try again.');
-        }
-        const vaultAddress = userVaults[userVaults.length - 1];
-        console.log('New vault created at:', vaultAddress);
-
-        // Refresh vaults list
-        const vaultDetails = await fetchVaultDetails(vaultAddress);
-        if (vaultDetails) {
-          setVaults(prevVaults => [...prevVaults, vaultDetails]);
-        }
-
-        return vaultAddress;
-      });
-    } catch (err) {
-      console.error('Error creating new vault:', err);
-      const errorMessage = getContractError(err);
-      console.error('Parsed error message:', errorMessage);
-      setError(errorMessage);
-      return undefined;
-    } finally {
-      setIsLoading(false);
+    console.log('Starting vault creation with params:', { unlockTime, targetPrice, targetAmount });
+    
+    // return await rateLimitedRpcCall(async () => {
+    // First verify if the factory contract exists
+    const factoryConfig = getVaultFactoryContract(selectedNetwork.chainId);
+    
+    // Check if we have a valid factory address
+    if (!factoryConfig.address) {
+      throw new Error('Vault factory not deployed yet. Please deploy contracts first using: npm run deploy:arbitrum-sepolia');
     }
-  };
+    
+    const factory = new ethers.Contract(
+      factoryConfig.address,
+      VaultFactoryABI,
+      signer
+    );
+
+    console.log('Contract exists, creating vault...');
+
+    // Create the vault
+    const priceFeedConfig = getCurrentEthPrice(selectedNetwork.chainId);
+    console.log('Calling createVault with params:', [unlockTime, targetPrice, targetAmount, priceFeedConfig.address]);
+    
+    const tx = await factory.createVault(
+      BigInt(unlockTime),
+      BigInt(targetPrice),
+      BigInt(targetAmount),
+      priceFeedConfig.address
+    );
+
+    console.log('Transaction submitted:', tx.hash);
+
+    // Wait for transaction to be mined
+    const receipt = await tx.wait();
+    console.log('Transaction confirmed:', receipt);
+
+    // Get the vault address by querying the contract directly
+    const userVaults = await factory.getUserVaults(selectedWallet.address);
+    if (!userVaults || userVaults.length === 0) {
+      throw new Error('No vaults found after creation. Please try again.');
+    }
+    const vaultAddress = userVaults[userVaults.length - 1];
+    console.log('New vault created at:', vaultAddress);
+
+    // Refresh vaults list
+    const vaultDetails = await fetchVaultDetails(vaultAddress);
+    if (vaultDetails) {
+      setVaults(prevVaults => [...prevVaults, vaultDetails]);
+    }
+
+    return vaultAddress;
+  }, [signer, selectedNetwork, selectedWallet]);
 
   const createERC20Vault = async (
     unlockTime: number,
@@ -559,7 +529,7 @@ export const useVault = () => {
     try {
       console.log('Starting ERC-20 vault creation with params:', { unlockTime, targetPrice, targetAmount, tokenAddress });
       
-      return await rateLimitedRpcCall(async () => {
+      // return await rateLimitedRpcCall(async () => {
         // First verify if the factory contract exists
         const factoryConfig = getVaultFactoryContract(selectedNetwork.chainId);
         const code = await provider.getCode(factoryConfig.address);
@@ -609,7 +579,7 @@ export const useVault = () => {
         }
 
         return vaultAddress;
-      });
+      // });
     } catch (err) {
       console.error('Error creating ERC-20 vault:', err);
       const errorMessage = getContractError(err);
@@ -887,12 +857,10 @@ export const useVault = () => {
       console.log('Current gas price:', ethers.formatUnits(gasPrice.gasPrice || 0n, 'gwei'), 'gwei');
 
       // Withdraw funds with explicit gas settings
-      const tx = await rateLimitedRpcCall(async () => {
-        return await vaultContract.withdraw({
-          gasLimit: (gasEstimate * 120n) / 100n, // Add 20% buffer
-          maxFeePerGas: gasPrice.maxFeePerGas,
-          maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
-        });
+      const tx = await vaultContract.withdraw({
+        gasLimit: (gasEstimate * 120n) / 100n, // Add 20% buffer
+        maxFeePerGas: gasPrice.maxFeePerGas,
+        maxPriorityFeePerGas: gasPrice.maxPriorityFeePerGas,
       });
       
       console.log('Withdrawal transaction submitted:', tx.hash);
@@ -907,9 +875,7 @@ export const useVault = () => {
 
       // Wait for transaction to be mined
       console.log('Waiting for transaction confirmation...');
-      const receipt = await rateLimitedRpcCall(async () => {
-        return await tx.wait();
-      });
+      const receipt = await tx.wait();
       console.log('Withdrawal transaction confirmed:', {
         hash: receipt.hash,
         blockNumber: receipt.blockNumber,
@@ -978,7 +944,7 @@ export const useVault = () => {
       try {
         console.log(`🔍 Checking vault ${vaultAddress} for auto-withdrawal...`);
         
-        await rateLimitedRpcCall(async () => {
+        // await rateLimitedRpcCall(async () => {
           const vaultContract = new ethers.Contract(vaultAddress, TimeCapsuleVaultABI, provider);
           
           // First, try to use the smart contract's canAutoWithdraw function
@@ -1063,7 +1029,7 @@ export const useVault = () => {
           } else {
             console.log(`⏳ Vault ${vaultAddress} not ready for withdrawal: ${reason}`);
           }
-        });
+        // });
         
       } catch (error) {
         console.error(`❌ Error checking vault ${vaultAddress} for auto-withdrawal:`, error);

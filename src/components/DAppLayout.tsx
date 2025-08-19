@@ -142,10 +142,34 @@ function DAppLayout() {
 
   return (
     <NetworkContext.Provider value={{ network: selectedNetwork, setNetwork: setSelectedNetwork, refreshWallets }}>
-      <Box minH="100vh" minW="100vw" bg="var(--bg-primary)" style={{ background: 'linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 60%, var(--accent-color) 100%)' }} position="relative" zIndex={0}>
+      <Box 
+        minH="100vh" 
+        minW="100vw" 
+        className="gradient-bg"
+        position="relative" 
+        zIndex={0}
+      >
         {/* Navigation Bar */}
-        <Flex as="nav" p={4} bg="rgba(24,26,32,0.95)" backdropFilter="blur(10px)" boxShadow="0 2px 12px 0 rgba(0,0,0,0.25)" borderBottom="1px solid var(--border-color)" alignItems="center" zIndex={9999} position="sticky" top="0" width="100%">
-          <Heading as="h1" size="md" color="var(--text-primary)" fontWeight="extrabold">
+        <Flex 
+          as="nav" 
+          p={4} 
+          className="glass-effect"
+          boxShadow="0 2px 12px 0 rgba(0,0,0,0.1)" 
+          borderBottom="1px solid var(--border-color)" 
+          alignItems="center" 
+          zIndex={9999} 
+          position="sticky" 
+          top="0" 
+          width="100%"
+        >
+          <Heading 
+            as="h1" 
+            size="md" 
+            color="var(--text-primary)" 
+            fontWeight="extrabold"
+            _hover={{ color: "var(--accent-color)" }}
+            transition="color 0.2s ease-in-out"
+          >
             <RouterLink to="/">TimeCapsuleVault</RouterLink>
           </Heading>
           <Spacer />
@@ -158,7 +182,8 @@ function DAppLayout() {
               onClick={onOpen}
               variant="ghost"
               color="var(--text-primary)"
-              _hover={{ bg: 'whiteAlpha.200' }}
+              _hover={{ bg: 'var(--accent-color)', color: 'white' }}
+              transition="all 0.2s ease-in-out"
             />
           ) : (
             <Stack direction="row" spacing={4} alignItems="center">
@@ -171,16 +196,55 @@ function DAppLayout() {
               />
               <ThemeToggle />
             
-            <Link as={RouterLink} to="/dashboard" px={3} py={1} rounded="md" color="var(--text-primary)" _hover={{ color: "var(--accent-color)", textDecoration: 'underline' }} transition="all 0.2s">
-              Dashboard
-            </Link>
-            <Link as={RouterLink} to="/my-vaults" px={3} py={1} rounded="md" color="var(--text-primary)" _hover={{ color: "var(--accent-color)", textDecoration: 'underline' }} transition="all 0.2s">
-              My Vaults
-            </Link>
-                          <Link as={RouterLink} to="/wallet" px={3} py={1} rounded="md" color="var(--text-primary)" _hover={{ color: "var(--accent-color)", textDecoration: 'underline' }} transition="all 0.2s">
+              <Link 
+                as={RouterLink} 
+                to="/dashboard" 
+                px={3} 
+                py={1} 
+                rounded="md" 
+                color="var(--text-primary)" 
+                _hover={{ 
+                  color: "var(--accent-color)", 
+                  textDecoration: 'underline',
+                  bg: 'rgba(127, 90, 240, 0.1)'
+                }} 
+                transition="all 0.2s ease-in-out"
+              >
+                Dashboard
+              </Link>
+              <Link 
+                as={RouterLink} 
+                to="/my-vaults" 
+                px={3} 
+                py={1} 
+                rounded="md" 
+                color="var(--text-primary)" 
+                _hover={{ 
+                  color: "var(--accent-color)", 
+                  textDecoration: 'underline',
+                  bg: 'rgba(127, 90, 240, 0.1)'
+                }} 
+                transition="all 0.2s ease-in-out"
+              >
+                My Vaults
+              </Link>
+              <Link 
+                as={RouterLink} 
+                to="/wallet" 
+                px={3} 
+                py={1} 
+                rounded="md" 
+                color="var(--text-primary)" 
+                _hover={{ 
+                  color: "var(--accent-color)", 
+                  textDecoration: 'underline',
+                  bg: 'rgba(127, 90, 240, 0.1)'
+                }} 
+                transition="all 0.2s ease-in-out"
+              >
                 Wallets
               </Link>
-                              {/* <NotificationBell /> */}
+              {/* <NotificationBell /> */}
               <Button 
                 as={RouterLink} 
                 to={buttonTo} 
@@ -190,8 +254,14 @@ function DAppLayout() {
                 py={2} 
                 rounded="full" 
                 fontWeight="bold"
-                _hover={{ bg: "var(--accent-color)", color: "var(--text-primary)", shadow: "lg" }} 
-                transition="all 0.2s"
+                bg="var(--accent-color)"
+                color="white"
+                _hover={{ 
+                  bg: "var(--accent-color)", 
+                  transform: "translateY(-1px)",
+                  boxShadow: "0 4px 12px rgba(127, 90, 240, 0.3)"
+                }} 
+                transition="all 0.2s ease-in-out"
               >
                 {buttonLabel}
               </Button>
@@ -202,11 +272,11 @@ function DAppLayout() {
         {/* Mobile Navigation Drawer */}
         <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
           <DrawerOverlay zIndex={9998} />
-          <DrawerContent bg="rgba(24,26,32,0.98)" color="white" zIndex={9999}>
-            <DrawerCloseButton />
-            <DrawerHeader borderBottomWidth="1px" borderColor="#414345">
+          <DrawerContent className="glass-effect" zIndex={9999}>
+            <DrawerCloseButton color="var(--text-primary)" />
+            <DrawerHeader borderBottomWidth="1px" borderColor="var(--border-color)">
               <HStack>
-                <Heading size="md">Menu</Heading>
+                <Heading size="md" color="var(--text-primary)">Menu</Heading>
                 <Spacer />
                 {/* <NotificationBell /> */}
               </HStack>
@@ -224,15 +294,20 @@ function DAppLayout() {
 
                 {/* Navigation Links */}
                 <VStack spacing={3} align="stretch">
-                  <Heading size="sm" color="gray.500">Navigation</Heading>
+                  <Heading size="sm" color="var(--text-secondary)">Navigation</Heading>
                   <Link 
                     as={RouterLink} 
                     to="/dashboard" 
                     p={3} 
                     rounded="md" 
-                    bg={location.pathname === '/dashboard' ? 'purple.600' : 'transparent'}
-                    _hover={{ bg: 'purple.700' }}
+                    bg={location.pathname === '/dashboard' ? 'var(--accent-color)' : 'transparent'}
+                    color={location.pathname === '/dashboard' ? 'white' : 'var(--text-primary)'}
+                    _hover={{ 
+                      bg: location.pathname === '/dashboard' ? 'var(--accent-color)' : 'rgba(127, 90, 240, 0.1)',
+                      color: 'var(--accent-color)'
+                    }}
                     onClick={onClose}
+                    transition="all 0.2s ease-in-out"
                   >
                     📊 Dashboard
                   </Link>
@@ -241,9 +316,14 @@ function DAppLayout() {
                     to="/my-vaults" 
                     p={3} 
                     rounded="md" 
-                    bg={location.pathname === '/my-vaults' ? 'purple.600' : 'transparent'}
-                    _hover={{ bg: 'purple.700' }}
+                    bg={location.pathname === '/my-vaults' ? 'var(--accent-color)' : 'transparent'}
+                    color={location.pathname === '/my-vaults' ? 'white' : 'var(--text-primary)'}
+                    _hover={{ 
+                      bg: location.pathname === '/my-vaults' ? 'var(--accent-color)' : 'rgba(127, 90, 240, 0.1)',
+                      color: 'var(--accent-color)'
+                    }}
                     onClick={onClose}
+                    transition="all 0.2s ease-in-out"
                   >
                     🔒 My Vaults
                   </Link>
@@ -252,9 +332,14 @@ function DAppLayout() {
                     to="/wallet" 
                     p={3} 
                     rounded="md" 
-                    bg={location.pathname === '/wallet' ? 'purple.600' : 'transparent'}
-                    _hover={{ bg: 'purple.700' }}
+                    bg={location.pathname === '/wallet' ? 'var(--accent-color)' : 'transparent'}
+                    color={location.pathname === '/wallet' ? 'white' : 'var(--text-primary)'}
+                    _hover={{ 
+                      bg: location.pathname === '/wallet' ? 'var(--accent-color)' : 'rgba(127, 90, 240, 0.1)',
+                      color: 'var(--accent-color)'
+                    }}
                     onClick={onClose}
+                    transition="all 0.2s ease-in-out"
                   >
                     💳 Wallets
                   </Link>

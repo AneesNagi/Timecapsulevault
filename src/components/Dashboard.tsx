@@ -3,27 +3,26 @@ import {
   Box,
   Container,
   VStack,
-  Heading,
+  HStack,
   Text,
-  Flex,
+  Heading,
   SimpleGrid,
   Stat,
   StatLabel,
   StatNumber,
   StatHelpText,
   StatArrow,
+  Icon,
+  Flex,
+  Badge,
+  Progress,
   Card,
   CardHeader,
   CardBody,
-  Progress,
-  Badge,
-  useColorModeValue,
-  Icon,
-  HStack,
-  Select,
   Grid,
   Center,
   Spinner,
+  Select,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { 
@@ -95,11 +94,10 @@ export const Dashboard = () => {
   const [goalProgress, setGoalProgress] = useState<GoalProgress[]>([]);
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
 
-  const bgColor = useColorModeValue('#f7fafc', '#0d1117');
-  const cardBg = useColorModeValue('white', '#161b22');
-  const borderColor = useColorModeValue('gray.200', '#30363d');
-  const textColor = useColorModeValue('gray.800', '#f0f6fc');
-  const mutedTextColor = useColorModeValue('gray.600', '#8b949e');
+  const cardBg = 'var(--card-bg)';
+  const borderColor = 'var(--border-color)';
+  const textColor = 'var(--text-primary)';
+  const mutedTextColor = 'var(--text-secondary)';
 
   // Calculate portfolio statistics
   useEffect(() => {
@@ -161,14 +159,14 @@ export const Dashboard = () => {
   }, [vaults]);
 
   const pieData = [
-    { name: 'Locked Funds', value: portfolioData?.totalLocked || 0, color: '#7f5af0' },
-    { name: 'Unlocked Funds', value: portfolioData?.totalUnlocked || 0, color: '#2cb67d' },
+    { name: 'Locked Funds', value: portfolioData?.totalLocked || 0, color: 'var(--accent-color)' },
+    { name: 'Unlocked Funds', value: portfolioData?.totalUnlocked || 0, color: 'var(--success-color)' },
   ];
 
 
 
   return (
-    <Box minH="100vh" bg={bgColor}>
+    <Box minH="100vh" className="gradient-bg">
       <Container maxW="container.xl" py={8}>
         <VStack spacing={8} align="stretch">
         {/* Header */}

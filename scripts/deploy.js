@@ -3,7 +3,7 @@ const { ethers } = require("hardhat");
 const fs = require("fs");
 
 async function main() {
-  console.log("Deploying VaultFactory contract to Sepolia...");
+  console.log("Deploying VaultFactory contract to Arbitrum Sepolia...");
 
   // Get the contract factory
   const VaultFactory = await ethers.getContractFactory("VaultFactory");

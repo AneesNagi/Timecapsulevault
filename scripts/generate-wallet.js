@@ -8,7 +8,7 @@ async function main() {
   console.log('Address:', wallet.address);
   console.log('Private Key:', wallet.privateKey);
   console.log('\nWARNING: Only use this wallet for testing!');
-  console.log('Fund this address with Sepolia ETH from a faucet like https://sepoliafaucet.com/');
+  console.log('Fund this address with Arbitrum Sepolia ETH from a faucet like https://faucet.quicknode.com/arbitrum/sepolia');
 }
 
 main().catch(console.error); 

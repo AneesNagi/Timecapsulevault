@@ -2,23 +2,22 @@ import React from 'react';
 import {
   Box,
   Button,
+  HStack,
+  VStack,
+  Text,
+  Icon,
+  useDisclosure,
+  Badge,
   Popover,
   PopoverTrigger,
   PopoverContent,
   PopoverBody,
-  VStack,
-  HStack,
-  Text,
-  Icon,
-  useColorModeValue,
-  Badge,
-  Divider,
-  useDisclosure,
   Portal,
+  Divider,
+  useColorModeValue,
 } from '@chakra-ui/react';
 import { keyframes } from '@emotion/react';
 import { 
-  FaEthereum, 
   FaNetworkWired, 
   FaChevronDown, 
   FaCheck,
@@ -26,7 +25,6 @@ import {
   FaServer,
   FaShieldAlt
 } from 'react-icons/fa';
-import { SiBinance } from 'react-icons/si';
 import { SUPPORTED_NETWORKS } from '../constants/networks.js';
 
 interface NetworkSelectorProps {
@@ -44,10 +42,8 @@ const pulseAnimation = keyframes`
 
 const getNetworkIcon = (networkId: string) => {
   switch (networkId) {
-    case 'sepolia':
-      return FaEthereum;
-    case 'bsc-testnet':
-      return SiBinance;
+    case 'arbitrum-sepolia':
+      return FaNetworkWired; // Use proper icon component
     default:
       return FaNetworkWired;
   }
@@ -55,10 +51,8 @@ const getNetworkIcon = (networkId: string) => {
 
 const getNetworkColor = (networkId: string) => {
   switch (networkId) {
-    case 'sepolia':
-      return '#627eea';
-    case 'bsc-testnet':
-      return '#f3ba2f';
+    case 'arbitrum-sepolia':
+      return '#28A0F0'; // Arbitrum blue
     default:
       return '#7f5af0';
   }
@@ -66,9 +60,7 @@ const getNetworkColor = (networkId: string) => {
 
 const getNetworkStatus = (networkId: string) => {
   switch (networkId) {
-    case 'sepolia':
-      return { status: 'active', label: 'Testnet', color: 'green' };
-    case 'bsc-testnet':
+    case 'arbitrum-sepolia':
       return { status: 'active', label: 'Testnet', color: 'green' };
     default:
       return { status: 'active', label: 'Active', color: 'green' };
@@ -180,7 +172,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                               </Badge>
                             </HStack>
                             <Text fontSize="xs" color="#a0a0a0">
-                              {network.rpc[0].includes('sepolia') ? 'Ethereum Testnet' : 'BSC Testnet'}
+                              {network.rpc[0].includes('arbitrum') ? 'Arbitrum Testnet' : 'Unknown Network'}
                             </Text>
                           </VStack>
                           
@@ -256,7 +248,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                       </Badge>
                     </HStack>
                     <Text fontSize="xs" color="#a0a0a0">
-                      {network.rpc[0].includes('sepolia') ? 'Ethereum Testnet' : 'BSC Testnet'}
+                      {network.rpc[0].includes('arbitrum') ? 'Arbitrum Testnet' : 'Unknown Network'}
                     </Text>
                   </VStack>
                   
@@ -413,7 +405,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                             </Badge>
                           </HStack>
                           <Text fontSize="xs" color="#a0a0a0">
-                            {network.rpc[0].includes('sepolia') ? 'Ethereum Testnet' : 'BSC Testnet'}
+                            {network.rpc[0].includes('arbitrum') ? 'Arbitrum Testnet' : 'Unknown Network'}
                           </Text>
                         </VStack>
                         

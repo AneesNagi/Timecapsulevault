@@ -74,14 +74,12 @@ export const WalletFundingModal: React.FC<WalletFundingModalProps> = ({
     onCreateVault();
   };
 
-  const getFaucetUrl = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'https://sepoliafaucet.com/';
-      case 'bsc-testnet':
-        return 'https://testnet.binance.org/faucet-smart';
+  const getFaucetUrl = (networkId: string) => {
+    switch (networkId) {
+      case 'arbitrum-sepolia':
+        return 'https://faucet.quicknode.com/arbitrum/sepolia';
       default:
-        return 'https://sepoliafaucet.com/';
+        return 'https://faucet.quicknode.com/arbitrum/sepolia';
     }
   };
 
@@ -233,7 +231,7 @@ export const WalletFundingModal: React.FC<WalletFundingModalProps> = ({
                     size="sm"
                     onClick={() => {
                       onCopy(); // Copy address first
-                      window.open(getFaucetUrl(), '_blank');
+                      window.open(getFaucetUrl(selectedNetwork.id), '_blank');
                     }}
                   >
                     Open {getNetworkName()} Faucet

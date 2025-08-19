@@ -96,10 +96,8 @@ export const VaultDetailsModal = ({
   // Helper function for dynamic currency display
   const getAssetName = () => {
     switch (selectedNetwork.id) {
-      case 'sepolia':
+      case 'arbitrum-sepolia':
         return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
       default:
         return 'ETH';
     }

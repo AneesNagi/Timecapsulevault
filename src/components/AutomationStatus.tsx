@@ -96,15 +96,12 @@ export const AutomationStatus: React.FC<AutomationStatusProps> = ({
   const openBSCScan = () => {
     // Network-specific automation addresses
     const automationAddresses: Record<number, string> = {
-      11155111: '0xAef3405A33560f5CbB6765D867A9D6407E870d6d', // Sepolia
-      97: '0x0A50711f2bA0d2fE64A661318F180f457F110dF2', // BSC Testnet
+      421614: '0x0000000000000000000000000000000000000000', // TODO: Update with actual Arbitrum Sepolia automation address
     };
     
     const chainId = selectedNetwork?.chainId as number;
-    const automationAddress = automationAddresses[chainId] || automationAddresses[11155111];
-    const baseUrl = chainId === 97 
-      ? 'https://testnet.bscscan.com' 
-      : 'https://sepolia.etherscan.io';
+    const automationAddress = automationAddresses[chainId] || automationAddresses[421614];
+    const baseUrl = 'https://sepolia.arbiscan.io';
     const url = `${baseUrl}/address/${automationAddress}`;
     window.open(url, '_blank');
   };
@@ -279,11 +276,10 @@ export const AutomationStatus: React.FC<AutomationStatusProps> = ({
                 <Text fontSize="xs" color="var(--text-muted)">
                   • Contract: {(() => {
                     const automationAddresses: Record<number, string> = {
-                      11155111: '0xAef3405A33560f5CbB6765D867A9D6407E870d6d', // Sepolia
-                      97: '0x0A50711f2bA0d2fE64A661318F180f457F110dF2', // BSC Testnet
+                      421614: '0x0000000000000000000000000000000000000000', // TODO: Update with actual Arbitrum Sepolia automation address
                     };
                     const chainId = selectedNetwork?.chainId as number;
-                    return automationAddresses[chainId] || automationAddresses[11155111];
+                    return automationAddresses[chainId] || automationAddresses[421614];
                   })()}
                 </Text>
                 <Text fontSize="xs" color="var(--text-muted)">

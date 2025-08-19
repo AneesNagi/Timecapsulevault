@@ -81,10 +81,8 @@ export const DepositPromptModal: React.FC<DepositPromptModalProps> = ({
 
   const getAssetName = () => {
     switch (selectedNetwork.id) {
-      case 'sepolia':
+      case 'arbitrum-sepolia':
         return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
       default:
         return 'ETH';
     }

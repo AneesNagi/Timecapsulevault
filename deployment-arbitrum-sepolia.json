@@ -1,0 +1,12 @@
+{
+  "network": "arbitrum-sepolia",
+  "timestamp": "2025-08-19T06:56:18.420Z",
+  "contracts": {
+    "vaultFactory": "0x3994B729338b083E50ea0c68364c7030D2Db398A",
+    "vaultAutomation": "0xB025cF008CF4daE512Ec1Eff9556931021c3adEC"
+  },
+  "deployment": {
+    "factory": "0x3994B729338b083E50ea0c68364c7030D2Db398A",
+    "automation": "0xB025cF008CF4daE512Ec1Eff9556931021c3adEC"
+  }
+}

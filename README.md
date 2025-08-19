@@ -2,7 +2,7 @@
 
 > **Programmable cryptocurrency vaults with time, price, and goal-based unlocking conditions**
 
-A secure, user-friendly DApp that enables sophisticated crypto asset management through smart contract automation. Built on Ethereum with Chainlink oracle integration.
+A secure, user-friendly DApp that enables sophisticated crypto asset management through smart contract automation. Built on Arbitrum with Chainlink oracle integration.
 
 ## Project Structure
 
@@ -44,19 +44,14 @@ A secure, user-friendly DApp that enables sophisticated crypto asset management 
 
 ## Supported Networks
 
-The TimeCapsule Vault DApp supports multiple blockchain networks:
+The TimeCapsule Vault DApp supports the following blockchain network:
 
-### Ethereum Networks
-- **Sepolia Testnet** (Chain ID: 11155111)
-  - Primary testnet for Ethereum development
+### Arbitrum Networks
+- **Arbitrum Sepolia Testnet** (Chain ID: 421614)
+  - Primary testnet for Arbitrum development
   - Full Chainlink oracle support
-  - Recommended for testing
-
-### BNB Smart Chain (BSC) Networks
-- **BSC Testnet** (Chain ID: 97)
-  - Testnet for BNB Smart Chain
   - Lower gas fees compared to Ethereum
-  - BNB/USD price feed support
+  - Recommended for testing
 
 ### Network Features
 - **Multi-chain Support**: Seamlessly switch between networks
@@ -64,81 +59,67 @@ The TimeCapsule Vault DApp supports multiple blockchain networks:
 - **Price Feed Integration**: Chainlink oracles for accurate price data
 - **Auto-withdrawal**: Automated vault unlocking across all networks
 
-## Getting Started
+## Quick Start
 
-1. **Install dependencies**:
+### Prerequisites
+- Node.js 18+ and npm
+- MetaMask or compatible wallet
+- Arbitrum Sepolia testnet ETH
+
+### Installation
 ```bash
+# Clone the repository
+git clone <repository-url>
+cd Timecapsulevault
+
+# Install dependencies
 npm install
-```
 
-2. **Start development server**:
-```bash
+# Start development server
 npm run dev
 ```
 
-3. **Access the application**:
-   - Main DApp: `http://localhost:5173/`
-   - Dashboard: `http://localhost:5173/dashboard`
-
-## Deployment
-
-### Deploy to Sepolia Testnet
+### Deploy to Arbitrum Sepolia Testnet
 ```bash
-npm run deploy:sepolia
+# Set your private key in .env file
+echo "PRIVATE_KEY=your_private_key_here" >> .env
+echo "ARBITRUM_SEPOLIA_RPC_URL=https://sepolia-rollup.arbitrum.io/rpc" >> .env
+
+# Deploy contracts
+npm run deploy:arbitrum-sepolia
+
+# Verify contracts (optional)
+npm run verify:arbitrum-sepolia
 ```
 
-### Deploy to BSC Testnet
-```bash
-npm run deploy:bsc-testnet
-```
-
-### Deploy to Mainnet
-```bash
-npm run deploy:mainnet
-```
-
-## Architecture Benefits
-
-### Simplified Structure
-- **Single Application**: No separation between marketing and functionality
-- **Direct Access**: Users land directly in the DApp
-- **Streamlined UX**: Clean, focused user experience
-
-### Comprehensive Dashboard
-- **Overview**: At-a-glance statistics and recent activity
-- **Quick Actions**: Easy access to main features
-- **Visual Design**: Modern dark theme with purple accents
-
-## Routes
-
-### Main Routes
-- `/` - Dashboard (default)
-- `/dashboard` - Dashboard overview
-- `/my-vaults` - View and manage vaults
-- `/create-vault` - Create new vault
-- `/wallet` - Wallet management
-- `/wallet/:address` - Individual wallet details
+### Get Testnet Tokens
+- **ETH**: https://faucet.quicknode.com/arbitrum/sepolia
+- **LINK**: https://faucets.chain.link/arbitrum-sepolia
 
 ## Development
 
-### Adding New Features
-- **Dashboard widgets**: Update `Dashboard.tsx`
-- **DApp functionality**: Update components in `src/components/`
-- **Routing**: Update `App.tsx` for new routes
+### Available Scripts
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run deploy:arbitrum-sepolia` - Deploy to Arbitrum Sepolia
+- `npm run verify:arbitrum-sepolia` - Verify contracts on Arbiscan
+- `npm run test` - Run tests
+- `npm run compile` - Compile smart contracts
 
-### Styling
-- Dark theme with purple accents throughout
-- Responsive design for all screen sizes
-- Consistent UI patterns
+### Contract Verification
+After deployment, verify your contracts on Arbiscan:
+```bash
+npm run verify:arbitrum-sepolia
+```
 
 ## Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Test thoroughly
+4. Add tests if applicable
 5. Submit a pull request
 
 ## License
 
-MIT License - see LICENSE file for details
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

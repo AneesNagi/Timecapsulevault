@@ -1,5 +1,5 @@
 {
-  "network": "sepolia",
-  "vaultFactoryAddress": "0x16c7209FEfd9015Be8E4124309Fee9B2AcF028eC",
-  "timestamp": "2025-06-28T06:23:48.571Z"
+  "network": "arbitrum-sepolia",
+  "vaultFactoryAddress": "0x0000000000000000000000000000000000000000",
+  "timestamp": "2025-01-27T00:00:00.000Z"
 }

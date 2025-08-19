@@ -83,10 +83,8 @@ export const VaultCard = ({
   // Helper function for dynamic currency display
   const getAssetName = () => {
     switch (selectedNetwork.id) {
-      case 'sepolia':
+      case 'arbitrum-sepolia':
         return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
       default:
         return 'ETH';
     }
@@ -114,27 +112,22 @@ export const VaultCard = ({
   return (
     <Box
       p={6}
-      bg="rgba(35, 37, 38, 0.9)"
+      className="glass-effect"
       borderRadius="xl"
       shadow="lg"
       cursor="pointer"
       onClick={onClick}
       borderWidth="2px"
-      borderColor={customization?.color || "rgba(65, 67, 69, 0.5)"}
+      borderColor={customization?.color || "var(--border-color)"}
       _hover={{
         shadow: "xl",
         transform: "translateY(-4px)",
-        bg: "rgba(35, 37, 38, 0.95)",
-        borderColor: customization?.color || "#7f5af0",
+        borderColor: customization?.color || "var(--accent-color)",
         transition: "all 0.3s ease-in-out",
       }}
       transition="all 0.3s ease-in-out"
       overflow="hidden"
       position="relative"
-      sx={{
-        background: 'linear-gradient(145deg, rgba(35, 37, 38, 0.9), rgba(24, 26, 32, 0.8))',
-        backdropFilter: 'blur(10px)',
-      }}
     >
       {/* Status Indicator */}
       <Box
@@ -155,15 +148,15 @@ export const VaultCard = ({
                 <Text fontSize="lg">{customization.emoji}</Text>
               )}
               <Icon as={isLocked ? FaLock : FaUnlock} color={isLocked ? "red.400" : "green.400"} />
-              <Text fontSize="lg" color="white" fontWeight="bold">
+              <Text fontSize="lg" color="var(--text-primary)" fontWeight="bold">
                 {customization?.name || `Vault #${index + 1}`}
               </Text>
             </HStack>
-                            <Text fontSize="xs" color="gray.500" fontFamily="mono">
+                            <Text fontSize="xs" color="var(--text-secondary)" fontFamily="mono">
               {vault.slice(0, 8)}...{vault.slice(-6)}
             </Text>
             {customization?.description && (
-                              <Text fontSize="sm" color="gray.400" maxW="200px" noOfLines={2}>
+                              <Text fontSize="sm" color="var(--text-secondary)" maxW="200px" noOfLines={2}>
                 {customization.description}
           </Text>
             )}
@@ -220,7 +213,7 @@ export const VaultCard = ({
                 _hover={{ color: "white" }}
                 onClick={(e) => e.stopPropagation()}
               />
-              <MenuList bg="rgba(35, 37, 38, 0.95)" borderColor="#414345">
+              <MenuList className="glass-effect">
                 {onCustomize && (
                   <MenuItem
                     icon={<FaPaintBrush />}
@@ -263,16 +256,16 @@ export const VaultCard = ({
           </HStack>
         </HStack>
         
-        <Divider borderColor="rgba(255,255,255,0.1)" />
+        <Divider borderColor="var(--border-color)" />
 
         {/* Balance Section */}
         <Box width="full">
-                          <Text fontSize="sm" color="gray.500" mb={1}>Balance</Text>
+                          <Text fontSize="sm" color="var(--text-secondary)" mb={1}>Balance</Text>
           <HStack spacing={2} alignItems="baseline">
-            <Text fontSize="3xl" fontWeight="extrabold" color="#7f5af0">
+            <Text fontSize="3xl" fontWeight="extrabold" color="var(--accent-color)">
               {parseFloat(formattedBalance).toFixed(4)}
           </Text>
-                            <Text fontSize="lg" color="gray.500" fontWeight="medium">{getAssetName()}</Text>
+                            <Text fontSize="lg" color="var(--text-secondary)" fontWeight="medium">{getAssetName()}</Text>
           </HStack>
         </Box>
 
@@ -302,10 +295,10 @@ export const VaultCard = ({
         {isTimeLocked && unlockTime && (
           <Box width="full">
             <HStack justify="space-between" mb={2}>
-                              <Text fontSize="sm" color="gray.500">Time Remaining</Text>
+                              <Text fontSize="sm" color="var(--text-secondary)">Time Remaining</Text>
               <HStack spacing={1}>
                 <Icon as={isUnlocked ? FaCheckCircle : FaClock} color={isUnlocked ? "green.400" : "blue.400"} boxSize={4} />
-                <Text fontSize="sm" fontWeight="semibold" color={isUnlocked ? "green.400" : "white"}>
+                <Text fontSize="sm" fontWeight="semibold" color={isUnlocked ? "green.400" : "var(--text-primary)"}>
                   {timeRemaining}
             </Text>
               </HStack>
@@ -324,19 +317,19 @@ export const VaultCard = ({
         {/* Price Lock Details */}
         {isPriceLocked && targetPrice && (
           <Box width="full">
-                            <Text fontSize="sm" color="gray.500" mb={2}>Price Target</Text>
+                            <Text fontSize="sm" color="var(--text-secondary)" mb={2}>Price Target</Text>
             <VStack spacing={1} align="start">
               <HStack spacing={2}>
                 <Icon as={FaChartLine} color="purple.400" />
-                <Text fontWeight="semibold" color="white">
+                <Text fontWeight="semibold" color="var(--text-primary)">
                   ${formattedTargetPrice.toFixed(2)}
             </Text>
               </HStack>
               {currentPrice !== undefined && !isNaN(currentPrice) && (
                 <HStack spacing={2}>
                   <Icon as={FaChartLine} color="yellow.400" />
-                                    <Text fontSize="sm" color="gray.500">
-                    Current: <Text as="span" fontWeight="bold" color="white">${currentPrice.toFixed(2)}</Text>
+                                    <Text fontSize="sm" color="var(--text-secondary)">
+                    Current: <Text as="span" fontWeight="bold" color="var(--text-primary)">${currentPrice.toFixed(2)}</Text>
                   </Text>
                   {currentPrice >= formattedTargetPrice && (
                     <Icon as={FaCheckCircle} color="green.400" />
@@ -350,11 +343,11 @@ export const VaultCard = ({
         {/* Goal Lock Details */}
         {isGoalLocked && goalAmount && currentAmount !== undefined && progressPercentage !== undefined && (
           <Box width="full">
-            <Text fontSize="sm" color="gray.500" mb={2}>Goal Progress</Text>
+            <Text fontSize="sm" color="var(--text-secondary)" mb={2}>Goal Progress</Text>
             <VStack spacing={2} align="start" width="full">
               <HStack justify="space-between" width="full">
-                <Text fontSize="sm" color="gray.500">Target</Text>
-                <Text fontWeight="semibold" color="white">
+                <Text fontSize="sm" color="var(--text-secondary)">Target</Text>
+                <Text fontWeight="semibold" color="var(--text-primary)">
               {formattedGoalUsd && !isNaN(Number(formattedGoalUsd)) ? `$${formattedGoalUsd}` : `${Number(goalAmount) / 1e18} ${getAssetName()}`}
             </Text>
               </HStack>
@@ -366,7 +359,7 @@ export const VaultCard = ({
                 width="full"
               />
               <HStack justify="space-between" width="full">
-                <Text fontSize="xs" color="gray.500">Progress</Text>
+                <Text fontSize="xs" color="var(--text-secondary)">Progress</Text>
                 <Text fontSize="sm" fontWeight="bold" color={progressPercentage >= 100 ? "green.400" : "yellow.400"}>
                   {Math.min(100, Math.max(0, progressPercentage)).toFixed(1)}%
             </Text>
@@ -414,7 +407,7 @@ export const VaultCard = ({
 
         {/* Action Hint */}
         <Box width="full" textAlign="center" pt={2}>
-          <Text fontSize="xs" color="gray.500" fontStyle="italic">
+          <Text fontSize="xs" color="var(--text-secondary)" fontStyle="italic">
             Click to view details
           </Text>
         </Box>

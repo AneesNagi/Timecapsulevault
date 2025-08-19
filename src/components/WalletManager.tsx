@@ -159,11 +159,10 @@ export const WalletManager = () => {
     ];
   };
 
-  const bgColor = '#181a20';
-  const cardBg = 'rgba(35, 37, 38, 0.9)';
-  const borderColor = '#4a5568';
-  const textColor = '#ffffff';
-  const mutedTextColor = '#a0a0a0';
+  const textColor = 'var(--text-primary)';
+  const mutedTextColor = 'var(--text-secondary)';
+  const cardBg = 'var(--card-bg)';
+  const borderColor = 'var(--border-color)';
   
   // Load saved wallets from localStorage
   useEffect(() => {
@@ -500,7 +499,7 @@ export const WalletManager = () => {
   };
 
   return (
-    <Box minH="100vh" bg={bgColor} py={8}>
+    <Box minH="100vh" className="gradient-bg" py={8}>
       <Container maxW="container.xl">
         <VStack spacing={8} align="stretch">
           {/* Header with Stats */}
@@ -509,11 +508,11 @@ export const WalletManager = () => {
             
             {/* Stats Cards */}
             <SimpleGrid columns={{ base: 1, md: 3 }} spacing={6} mb={8}>
-              <Card bg={cardBg} borderColor={borderColor} borderRadius="xl">
+              <Card className="glass-effect" borderRadius="xl">
                 <CardBody p={6}>
                   <Stat>
                     <StatLabel color={mutedTextColor}>Total Balance</StatLabel>
-                    <StatNumber color="#7f5af0" fontSize="2xl">
+                    <StatNumber color="var(--accent-color)" fontSize="2xl">
                       {walletStats.totalBalance.toFixed(4)} {selectedNetwork.currency}
                     </StatNumber>
                     <StatHelpText color={mutedTextColor}>
@@ -523,7 +522,7 @@ export const WalletManager = () => {
                 </CardBody>
               </Card>
               
-              <Card bg={cardBg} borderColor={borderColor} borderRadius="xl">
+              <Card className="glass-effect" borderRadius="xl">
                 <CardBody p={6}>
                   <Stat>
                     <StatLabel color={mutedTextColor}>Total Wallets</StatLabel>
@@ -537,7 +536,7 @@ export const WalletManager = () => {
                 </CardBody>
               </Card>
               
-              <Card bg={cardBg} borderColor={borderColor} borderRadius="xl">
+              <Card className="glass-effect" borderRadius="xl">
                 <CardBody p={6}>
                   <Stat>
                     <StatLabel color={mutedTextColor}>Active Wallets</StatLabel>
@@ -554,9 +553,9 @@ export const WalletManager = () => {
           </Box>
 
           {/* Main Content */}
-          <Card bg={cardBg} borderColor={borderColor} borderRadius="xl" overflow="hidden" w="full">
+          <Card className="glass-effect" borderRadius="xl" overflow="hidden" w="full">
             {/* Header with refresh button */}
-            <CardHeader p={4} borderBottom="1px" borderColor={borderColor}>
+            <CardHeader p={4} borderBottom="1px" borderColor="var(--border-color)">
               <HStack justify="space-between">
                 <Heading size="md" color={textColor}>My Wallets</Heading>
                 <HStack spacing={2}>
@@ -587,12 +586,10 @@ export const WalletManager = () => {
             
                         <Tabs variant="enclosed" colorScheme="purple" w="full">
               <TabList 
-                bg={cardBg} 
+                className="glass-effect"
                 borderRadius="lg" 
                 p={{ base: 1, md: 2 }} 
                 boxShadow="md"
-                border="1px"
-                borderColor={borderColor}
                 display="flex"
                 justifyContent="flex-start"
                 overflow="visible"
@@ -929,9 +926,9 @@ export const WalletManager = () => {
                                     duration: 5000,
                                   });
                                                   // Open appropriate faucet based on network
-                const faucetUrl = selectedNetwork.id === 'bsc-testnet' 
-                  ? 'https://testnet.binance.org/faucet-smart'
-                  : 'https://sepoliafaucet.com/';
+                const faucetUrl = selectedNetwork.id === 'arbitrum-sepolia'
+                  ? 'https://faucet.quicknode.com/arbitrum/sepolia'
+                  : 'https://faucet.quicknode.com/arbitrum/sepolia';
                 window.open(faucetUrl, '_blank');
                                 }}
                                 colorScheme="blue" 
