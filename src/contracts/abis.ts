@@ -843,8 +843,13 @@ export const ERC20TimeCapsuleVaultABI = [
     "inputs": [
       {
         "internalType": "address",
-        "name": "_token",
+        "name": "tokenAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "amount",
+        "type": "uint256"
       }
     ],
     "name": "recoverToken",
@@ -906,7 +911,7 @@ export const ERC20TimeCapsuleVaultABI = [
   },
   {
     "inputs": [],
-    "name": "tokenAddress",
+    "name": "token",
     "outputs": [
       {
         "internalType": "address",

@@ -49,6 +49,7 @@ import {
 } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { ethers } from 'ethers';
+import { createProvider } from '../utils/provider';
 import { EnhancedSkeletonCard } from './EnhancedSkeletonCard';
 import { useMobileOptimization } from '../hooks/useMobileOptimization';
 import { SUPPORTED_NETWORKS } from '../constants/networks.js';
@@ -181,9 +182,15 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
       let transactions: Transaction[] = [];
       
       try {
-        // Use Arbitrum Sepolia API for better performance
-        const apiKey = 'YourArbiscanApiKey';
-        const baseUrl = 'https://api-sepolia.arbiscan.io/api';
+        // Use Etherscan/BSCScan API for better performance
+        const apiKey = network === 'sepolia' ? 'YourEtherscanApiKey' : 
+                      network === 'arbitrum-sepolia' ? 'YourArbiscanApiKey' :
+                      'YourBscScanApiKey';
+        const baseUrl = network === 'sepolia' 
+          ? 'https://api-sepolia.etherscan.io/api'
+          : network === 'arbitrum-sepolia'
+          ? 'https://api-sepolia.arbiscan.io/api'
+          : 'https://api-testnet.bscscan.com/api';
         
         const response = await fetch(
           `${baseUrl}?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`
@@ -223,7 +230,7 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
       // If API failed or no transactions found, try RPC method
       if (transactions.length === 0) {
         // Create provider
-        const provider = new ethers.JsonRpcProvider(networkConfig.rpc[0]);
+        const provider = createProvider(networkConfig);
         
         // Get current block number
         const currentBlock = await provider.getBlockNumber();
@@ -711,7 +718,11 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
                             variant="ghost"
                             color={textColor}
                             onClick={() => {
-                              const explorerUrl = 'https://sepolia.arbiscan.io/tx/' + tx.hash;
+                              const explorerUrl = network === 'sepolia' 
+                                ? `https://sepolia.etherscan.io/tx/${tx.hash}`
+                                : network === 'arbitrum-sepolia'
+                                ? `https://sepolia.arbiscan.io/tx/${tx.hash}`
+                                : `https://testnet.bscscan.com/tx/${tx.hash}`;
                               window.open(explorerUrl, '_blank');
                             }}
                           />

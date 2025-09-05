@@ -23,10 +23,18 @@ export interface VaultData {
   unlockReason: string;
 }
 
-const NETWORK_CONFIGS = {
+const NETWORK_CONFIGS: Record<number, { vaultFactoryAddress: string; priceFeed: string } | { vaultFactoryAddress: string; priceFeed: string }> = {
+  11155111: {
+    vaultFactoryAddress: '0x3951c8992405d9668C74B13d954da79D1be46bbB',
+    priceFeed: '0x694AA1769357215DE4FAC081bf1f309aDC325306',
+  },
   421614: {
-    vaultFactoryAddress: '0x0000000000000000000000000000000000000000', // TODO: Update with actual deployed address
-    priceFeed: '0x2E164F7dB4b9b3b3C3C3C3C3C3C3C3C3C3C3C3C3', // TODO: Update with actual Arbitrum Sepolia ETH/USD price feed
+    vaultFactoryAddress: '', // Will be populated after deployment
+    priceFeed: '0x9Df9a7f3C80736059D7414e1b0FCd3d775948EAe',
+  },
+  97: {
+    vaultFactoryAddress: '0xB025cF008CF4daE512Ec1Eff9556931021c3adEC',
+    priceFeed: '0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526',
   },
 };
 
@@ -52,7 +60,81 @@ export function useVault(selectedNetworkId: string | null) {
             setSelectedWallet(wallet);
             const net = selectedNetworkId ? getNetworkById(selectedNetworkId) : SUPPORTED_NETWORKS[0];
             if (net) {
-              const p = new ethers.JsonRpcProvider(net.rpc[0]);
+              // Create a custom provider that prevents fallback to default RPC endpoints
+              class CustomJsonRpcProvider extends ethers.JsonRpcProvider {
+                constructor(url: string, network: any) {
+                  super(url, network);
+                }
+                
+                _getUrl(): string {
+                  return net.rpc[0];
+                }
+              }
+
+              // Fallback provider that tries multiple RPC endpoints
+              class FallbackProvider extends ethers.JsonRpcProvider {
+                private urls: string[];
+                private network: any;
+                
+                constructor(urls: string[], network: any) {
+                  super(urls[0], network);
+                  this.urls = urls;
+                  this.network = network;
+                }
+                
+                async _send(payload: any): Promise<any> {
+                  let lastError: Error | null = null;
+                  
+                  for (let i = 0; i < this.urls.length; i++) {
+                    try {
+                      const provider = new CustomJsonRpcProvider(this.urls[i], this.network);
+                      return await provider._send(payload);
+                    } catch (error: any) {
+                      lastError = error;
+                      console.warn(`RPC endpoint ${this.urls[i]} failed:`, error.message);
+                      
+                      // If it's a method not found error, try the next endpoint
+                      if (error.message?.includes('Method not found') || 
+                          error.message?.includes('eth_newFilter') ||
+                          error.message?.includes('eth_getLogs') ||
+                          error.message?.includes('unavailable on our public API') ||
+                          error.code === -32601) {
+                        continue;
+                      }
+                      
+                      // If it's a CORS or rate limiting error, try the next endpoint
+                      if (error.message?.includes('CORS') || 
+                          error.message?.includes('Access-Control-Allow-Origin') ||
+                          error.message?.includes('Too Many Requests') ||
+                          error.message?.includes('429') ||
+                          error.message?.includes('Batch of more than 3 requests') ||
+                          error.message?.includes('free tier') ||
+                          error.message?.includes('not valid JSON') ||
+                          error.code === 429 ||
+                          error.code === 31) {
+                        continue;
+                      }
+                      
+                      // For other errors, also try next endpoint
+                      continue;
+                    }
+                  }
+                  
+                  throw lastError || new Error('All RPC endpoints failed');
+                }
+              }
+              
+              const p = net.rpc.length === 1 
+                ? new CustomJsonRpcProvider(net.rpc[0], {
+                    name: net.name,
+                    chainId: net.chainId,
+                    ensAddress: undefined
+                  })
+                : new FallbackProvider(net.rpc, {
+                    name: net.name,
+                    chainId: net.chainId,
+                    ensAddress: undefined
+                  });
               const s = new ethers.Wallet(wallet.privateKey, p);
               setProvider(p);
               setSigner(s);

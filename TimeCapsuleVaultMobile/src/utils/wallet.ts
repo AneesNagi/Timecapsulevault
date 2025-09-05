@@ -76,7 +76,60 @@ export async function updateAllWalletBalances(): Promise<WalletData[]> {
           try {
             const network = SUPPORTED_NETWORKS.find((n) => n.id === wallet.network);
             if (network) {
-              const provider = new ethers.JsonRpcProvider(network.rpc[0]);
+              // Create fallback provider
+              class FallbackProvider extends ethers.JsonRpcProvider {
+                private urls: string[];
+                private network: any;
+                
+                constructor(urls: string[], network: any) {
+                  super(urls[0], network);
+                  this.urls = urls;
+                  this.network = network;
+                }
+                
+                async _send(payload: any): Promise<any> {
+                  let lastError: Error | null = null;
+                  
+                  for (let i = 0; i < this.urls.length; i++) {
+                    try {
+                      const provider = new ethers.JsonRpcProvider(this.urls[i], this.network);
+                      return await provider._send(payload);
+                    } catch (error: any) {
+                      lastError = error;
+                      console.warn(`RPC endpoint ${this.urls[i]} failed:`, error.message);
+                      
+                      if (error.message?.includes('Method not found') || 
+                          error.message?.includes('eth_newFilter') ||
+                          error.message?.includes('eth_getLogs') ||
+                          error.message?.includes('unavailable on our public API') ||
+                          error.code === -32601) {
+                        continue;
+                      }
+                      
+                      // If it's a CORS or rate limiting error, try the next endpoint
+                      if (error.message?.includes('CORS') || 
+                          error.message?.includes('Access-Control-Allow-Origin') ||
+                          error.message?.includes('Too Many Requests') ||
+                          error.message?.includes('429') ||
+                          error.message?.includes('Batch of more than 3 requests') ||
+                          error.message?.includes('free tier') ||
+                          error.message?.includes('not valid JSON') ||
+                          error.code === 429 ||
+                          error.code === 31) {
+                        continue;
+                      }
+                      
+                      continue;
+                    }
+                  }
+                  
+                  throw lastError || new Error('All RPC endpoints failed');
+                }
+              }
+              
+              const provider = network.rpc.length === 1 
+                ? new ethers.JsonRpcProvider(network.rpc[0])
+                : new FallbackProvider(network.rpc, { name: network.name, chainId: network.chainId });
               const txCount = await provider.getTransactionCount(wallet.address);
               transactionCount = txCount;
             }
@@ -126,7 +179,60 @@ export async function updateNetworkWalletBalances(networkId: string): Promise<Wa
           try {
             const network = SUPPORTED_NETWORKS.find((n) => n.id === wallet.network);
             if (network) {
-              const provider = new ethers.JsonRpcProvider(network.rpc[0]);
+              // Create fallback provider
+              class FallbackProvider extends ethers.JsonRpcProvider {
+                private urls: string[];
+                private network: any;
+                
+                constructor(urls: string[], network: any) {
+                  super(urls[0], network);
+                  this.urls = urls;
+                  this.network = network;
+                }
+                
+                async _send(payload: any): Promise<any> {
+                  let lastError: Error | null = null;
+                  
+                  for (let i = 0; i < this.urls.length; i++) {
+                    try {
+                      const provider = new ethers.JsonRpcProvider(this.urls[i], this.network);
+                      return await provider._send(payload);
+                    } catch (error: any) {
+                      lastError = error;
+                      console.warn(`RPC endpoint ${this.urls[i]} failed:`, error.message);
+                      
+                      if (error.message?.includes('Method not found') || 
+                          error.message?.includes('eth_newFilter') ||
+                          error.message?.includes('eth_getLogs') ||
+                          error.message?.includes('unavailable on our public API') ||
+                          error.code === -32601) {
+                        continue;
+                      }
+                      
+                      // If it's a CORS or rate limiting error, try the next endpoint
+                      if (error.message?.includes('CORS') || 
+                          error.message?.includes('Access-Control-Allow-Origin') ||
+                          error.message?.includes('Too Many Requests') ||
+                          error.message?.includes('429') ||
+                          error.message?.includes('Batch of more than 3 requests') ||
+                          error.message?.includes('free tier') ||
+                          error.message?.includes('not valid JSON') ||
+                          error.code === 429 ||
+                          error.code === 31) {
+                        continue;
+                      }
+                      
+                      continue;
+                    }
+                  }
+                  
+                  throw lastError || new Error('All RPC endpoints failed');
+                }
+              }
+              
+              const provider = network.rpc.length === 1 
+                ? new ethers.JsonRpcProvider(network.rpc[0])
+                : new FallbackProvider(network.rpc, { name: network.name, chainId: network.chainId });
               const txCount = await provider.getTransactionCount(wallet.address);
               transactionCount = txCount;
             }

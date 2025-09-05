@@ -1,45 +1,47 @@
-// Simple deployment script using ethers.js
+// Deployment script that links VaultAutomation and VaultFactory
 const { ethers } = require("hardhat");
 const fs = require("fs");
 
 async function main() {
-  console.log("Deploying VaultFactory contract to Arbitrum Sepolia...");
+  const providerNetwork = await ethers.provider.getNetwork();
+  console.log(`Deploying contracts to chainId: ${providerNetwork.chainId}`);
 
-  // Get the contract factory
+  const [deployer] = await ethers.getSigners();
+  console.log(`Deployer: ${deployer.address}`);
+
+  // Deploy VaultAutomation
+  const VaultAutomation = await ethers.getContractFactory("VaultAutomation");
+  const vaultAutomation = await VaultAutomation.deploy();
+  await vaultAutomation.waitForDeployment();
+  const automationAddress = await vaultAutomation.getAddress();
+  console.log(`VaultAutomation deployed: ${automationAddress}`);
+
+  // Deploy VaultFactory with automation address
   const VaultFactory = await ethers.getContractFactory("VaultFactory");
-  
-  // Deploy the contract
-  const vaultFactory = await VaultFactory.deploy();
+  const vaultFactory = await VaultFactory.deploy(automationAddress);
   await vaultFactory.waitForDeployment();
-  
-  // Get the deployed contract address
-  const vaultFactoryAddress = await vaultFactory.getAddress();
-  
-  console.log(`VaultFactory deployed to: ${vaultFactoryAddress}`);
-  
-  // Save deployment information
+  const factoryAddress = await vaultFactory.getAddress();
+  console.log(`VaultFactory deployed: ${factoryAddress}`);
+
+  // Link factory in automation
+  const tx = await vaultAutomation.setFactoryContract(factoryAddress);
+  await tx.wait();
+  console.log(`Linked factory in automation.`);
+
+  // Save deployment
   const deploymentInfo = {
-    network: network.name,
-    vaultFactoryAddress: vaultFactoryAddress,
+    chainId: Number(providerNetwork.chainId),
+    vaultFactoryAddress: factoryAddress,
+    vaultAutomationAddress: automationAddress,
+    deployer: deployer.address,
     timestamp: new Date().toISOString()
   };
-  
-  fs.writeFileSync(
-    "deployment.json",
-    JSON.stringify(deploymentInfo, null, 2)
-  );
+  fs.writeFileSync("deployment.json", JSON.stringify(deploymentInfo, null, 2));
 
   console.log("\nDeployment successful! ✅");
-  console.log("\nNEXT STEPS:");
-  console.log(`1. Open src/utils/contracts.ts`);
-  console.log(`2. Update VAULT_FACTORY_ADDRESS with: '${vaultFactoryAddress}'`);
-  console.log('3. Run the app with: npm run dev');
 }
 
-// Execute the deployment
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error("Deployment failed:", error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error("Deployment failed:", error);
+  process.exit(1);
+});

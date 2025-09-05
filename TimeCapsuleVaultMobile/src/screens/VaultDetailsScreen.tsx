@@ -80,7 +80,7 @@ export default function VaultDetailsScreen() {
     setTransactions(mockTransactions);
   }, [route.params]);
 
-  const { deposit, withdraw } = useVault('arbitrum-sepolia');
+  const { deposit, withdraw } = useVault('bsc-testnet');
 
   const handleDeposit = async () => {
     if (!amount || parseFloat(amount) <= 0) {

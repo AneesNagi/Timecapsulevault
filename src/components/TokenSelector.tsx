@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import { FaEthereum, FaSearch, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { ethers } from 'ethers';
+import { createProvider } from '../utils/provider';
 import { NetworkContext } from './DAppLayout';
 
 // ERC-20 Token ABI (minimal for basic info)
@@ -54,8 +55,10 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
   // Helper function for dynamic currency display
   const getAssetName = () => {
     switch (selectedNetwork.id) {
-      case 'arbitrum-sepolia':
+      case 'sepolia':
         return 'ETH';
+      case 'bsc-testnet':
+        return 'BNB';
       default:
         return 'ETH';
     }
@@ -76,7 +79,7 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
 
   const fetchTokenInfo = async (address: string): Promise<TokenInfo | null> => {
     try {
-      const provider = new ethers.JsonRpcProvider(selectedNetwork.rpc[0]);
+      const provider = createProvider(selectedNetwork);
       const tokenContract = new ethers.Contract(address, ERC20_ABI, provider);
 
       const [name, symbol, decimals] = await Promise.all([

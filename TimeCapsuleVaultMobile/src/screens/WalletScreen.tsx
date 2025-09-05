@@ -593,7 +593,7 @@ export default function WalletScreen() {
                 <Avatar.Icon 
                   size={40} 
                   icon="wallet" 
-                  style={{ backgroundColor: selectedWallet.network === 'arbitrum-sepolia' ? '#28A0F0' : '#28A0F0' }} 
+                  style={{ backgroundColor: selectedWallet.network === 'sepolia' ? '#627EEA' : '#F3BA2F' }} 
                 />
                 <View style={styles.walletSelectorDetails}>
                   <Text style={[styles.walletSelectorName, { color: colors.text }]}>
@@ -693,8 +693,8 @@ export default function WalletScreen() {
                 left={() => (
                   <Avatar.Icon 
                     size={40} 
-                    icon={selectedNetwork === 'arbitrum-sepolia' ? 'ethereum' : 'ethereum'} 
-                    style={{ backgroundColor: selectedNetwork === 'arbitrum-sepolia' ? '#28A0F0' : '#28A0F0' }} 
+                    icon={selectedNetwork === 'sepolia' ? 'ethereum' : 'currency-btc'} 
+                    style={{ backgroundColor: selectedNetwork === 'sepolia' ? '#627EEA' : '#F3BA2F' }} 
                   />
                 )}
                 right={() => (
@@ -1007,14 +1007,14 @@ export default function WalletScreen() {
                   style={[
                     styles.networkOptionButton,
                     selectedNetwork === network.id && {
-                      backgroundColor: network.id === 'arbitrum-sepolia' ? '#28A0F0' : '#28A0F0'
+                      backgroundColor: network.id === 'sepolia' ? '#627EEA' : '#F3BA2F'
                     }
                   ]}
                   labelStyle={{
                     color: selectedNetwork === network.id ? '#fff' : colors.text
                   }}
                 >
-                  {network.id === 'arbitrum-sepolia' ? '🔵' : '🔵'} {network.name}
+                  {network.id === 'sepolia' ? 'Ξ' : 'B'} {network.name}
                 </Button>
               ))}
             </View>
@@ -1050,7 +1050,7 @@ export default function WalletScreen() {
                  style={[
                    styles.walletOptionButton,
                    selectedWallet?.id === wallet.id && {
-                     backgroundColor: wallet.network === 'arbitrum-sepolia' ? '#28A0F0' : '#28A0F0'
+                     backgroundColor: wallet.network === 'sepolia' ? '#627EEA' : '#F3BA2F'
                    }
                  ]}
                  labelStyle={{

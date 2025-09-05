@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { SUPPORTED_NETWORKS } from '../constants/networks';
+import { createProvider } from './provider';
 
 export interface WalletData {
   address: string;
@@ -10,9 +11,9 @@ export interface WalletData {
 
 export const createWallet = async (network: string): Promise<WalletData> => {
   const wallet = ethers.Wallet.createRandom();
-  const provider = new ethers.JsonRpcProvider(
-    SUPPORTED_NETWORKS.find((n) => n.id === network)?.rpc[0]
-  );
+  const networkConfig = SUPPORTED_NETWORKS.find((n) => n.id === network);
+  if (!networkConfig) throw new Error(`Network ${network} not found`);
+  const provider = createProvider(networkConfig);
   
   const connectedWallet = wallet.connect(provider);
   const balance = await provider.getBalance(connectedWallet.address);
@@ -27,9 +28,9 @@ export const createWallet = async (network: string): Promise<WalletData> => {
 
 export const importWallet = async (privateKey: string, network: string): Promise<WalletData> => {
   const wallet = new ethers.Wallet(privateKey);
-  const provider = new ethers.JsonRpcProvider(
-    SUPPORTED_NETWORKS.find((n) => n.id === network)?.rpc[0]
-  );
+  const networkConfig = SUPPORTED_NETWORKS.find((n) => n.id === network);
+  if (!networkConfig) throw new Error(`Network ${network} not found`);
+  const provider = createProvider(networkConfig);
   
   const connectedWallet = wallet.connect(provider);
   const balance = await provider.getBalance(connectedWallet.address);
@@ -43,9 +44,9 @@ export const importWallet = async (privateKey: string, network: string): Promise
 };
 
 export const getWalletBalance = async (address: string, network: string): Promise<string> => {
-  const provider = new ethers.JsonRpcProvider(
-    SUPPORTED_NETWORKS.find((n) => n.id === network)?.rpc[0]
-  );
+  const networkConfig = SUPPORTED_NETWORKS.find((n) => n.id === network);
+  if (!networkConfig) throw new Error(`Network ${network} not found`);
+  const provider = createProvider(networkConfig);
   
   const balance = await provider.getBalance(address);
   return ethers.formatEther(balance);
@@ -64,9 +65,9 @@ export const estimateGasFee = async (
   toAddress: string,
   amount: string
 ): Promise<GasEstimate> => {
-  const provider = new ethers.JsonRpcProvider(
-    SUPPORTED_NETWORKS.find((n) => n.id === fromWallet.network)?.rpc[0]
-  );
+  const networkConfig = SUPPORTED_NETWORKS.find((n) => n.id === fromWallet.network);
+  if (!networkConfig) throw new Error(`Network ${fromWallet.network} not found`);
+  const provider = createProvider(networkConfig);
   const amountWei = ethers.parseEther(amount);
   
   // Get current gas price
@@ -108,9 +109,9 @@ export const sendTransaction = async (
   amount: string,
   useMaxAmount: boolean = false
 ): Promise<string> => {
-  const provider = new ethers.JsonRpcProvider(
-    SUPPORTED_NETWORKS.find((n) => n.id === fromWallet.network)?.rpc[0]
-  );
+  const networkConfig = SUPPORTED_NETWORKS.find((n) => n.id === fromWallet.network);
+  if (!networkConfig) throw new Error(`Network ${fromWallet.network} not found`);
+  const provider = createProvider(networkConfig);
   
   // Get gas estimate
   const gasEstimate = await estimateGasFee(fromWallet, toAddress, amount);

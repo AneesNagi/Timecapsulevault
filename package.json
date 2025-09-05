@@ -8,13 +8,16 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "compile": "hardhat compile",
+    "deploy:sepolia": "hardhat run scripts/deploy.js --network sepolia",
     "deploy:arbitrum-sepolia": "hardhat run scripts/deploy-arbitrum-sepolia.js --network arbitrum-sepolia",
-    "deploy:mock-price-feed": "hardhat run scripts/deploy-mock-price-feed.js --network arbitrum-sepolia",
+    "deploy:bsc-testnet": "hardhat run scripts/deploy-bsc-testnet.js --network bsc-testnet",
     "deploy:mainnet": "hardhat run scripts/deploy-mainnet.js --network mainnet",
     "test": "hardhat test",
     "test:coverage": "hardhat coverage",
     "test:gas": "REPORT_GAS=true hardhat test",
+    "verify:sepolia": "hardhat verify --network sepolia",
     "verify:arbitrum-sepolia": "hardhat verify --network arbitrum-sepolia",
+    "verify:bsc-testnet": "hardhat verify --network bsc-testnet",
     "verify:mainnet": "hardhat verify --network mainnet",
     "typechain": "typechain --target ethers-v6 --out-dir src/typechain",
     "clean": "hardhat clean && rm -rf dist coverage",
@@ -23,8 +26,7 @@
     "analyze": "npm run build && npx bundle-analyzer dist/assets/*.js",
     "security:audit": "npm audit && npm audit fix",
     "docker:build": "docker build -t timecapsule-vault .",
-    "docker:run": "docker run -p 3000:3000 timecapsule-vault",
-    "node": "hardhat node"
+    "docker:run": "docker run -p 3000:3000 timecapsule-vault"
   },
   "dependencies": {
     "@chainlink/contracts": "^1.4.0",
@@ -33,9 +35,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@openzeppelin/contracts": "^5.4.0",
-    "@rainbow-me/rainbowkit": "^2.2.6",
     "@react-spring/web": "^10.0.1",
-    "@tanstack/react-query": "^5.80.6",
     "@types/crypto-js": "^4.2.2",
     "alchemy-sdk": "^3.6.2",
     "crypto-js": "^4.2.0",
@@ -52,8 +52,7 @@
     "react-router-dom": "^7.6.2",
     "recharts": "^2.15.4",
     "sharp": "^0.34.3",
-    "viem": "^2.31.0",
-    "wagmi": "^2.15.6"
+    "viem": "^2.31.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",

@@ -24,6 +24,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "EXPO_PUBLIC_SEPOLIA_RPC_URL": "",
+      "EXPO_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL": "",
+      "EXPO_PUBLIC_BSC_TESTNET_RPC_URL": ""
     }
   }
 }

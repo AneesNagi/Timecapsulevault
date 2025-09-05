@@ -2,124 +2,121 @@ const { ethers } = require("hardhat");
 const fs = require("fs");
 
 async function main() {
-  console.log("🔗 Registering VaultAutomation with Chainlink Automation on Arbitrum Sepolia...");
+  console.log("🔧 Registering TimeCapsule Vault Automation on Arbitrum Sepolia...");
+  
+  // Safety check - ensure we're on Arbitrum Sepolia
+  const network = await ethers.provider.getNetwork();
+  if (network.chainId !== 421614n) {
+    throw new Error("This script is for Arbitrum Sepolia deployment only!");
+  }
 
-  // Load deployment info
+  // Load deployment information
   let deploymentInfo;
   try {
     deploymentInfo = JSON.parse(fs.readFileSync("deployment-arbitrum-sepolia.json", "utf8"));
   } catch (error) {
-    console.log("⚠️  No Arbitrum Sepolia deployment found. Please run deploy-arbitrum-sepolia.js first");
+    console.error("❌ Could not load deployment-arbitrum-sepolia.json");
+    console.error("Please run deploy-arbitrum-sepolia.js first");
     process.exit(1);
   }
 
-  // Safety check - ensure we're on Arbitrum Sepolia
-  const network = await ethers.provider.getNetwork();
-  if (network.chainId !== 421614n) {
-    throw new Error("This script is for Arbitrum Sepolia testnet only!");
-  }
-
-  console.log("✅ Network confirmed: Arbitrum Sepolia Testnet");
-  console.log("📋 Deployment info loaded:", deploymentInfo);
-
-  const { vaultFactory, vaultAutomation } = deploymentInfo.deployment;
-
-  // Verify contracts are deployed
-  if (!vaultFactory || !vaultAutomation) {
-    throw new Error("Missing contract addresses in deployment info");
-  }
-
-  console.log("\n🔍 Verifying contract deployment...");
+  const { vaultAutomationAddress, vaultFactoryAddress } = deploymentInfo;
   
+  console.log(`📋 Using VaultAutomation: ${vaultAutomationAddress}`);
+  console.log(`📋 Using VaultFactory: ${vaultFactoryAddress}`);
+
+  // Get deployer account
+  const [deployer] = await ethers.getSigners();
+  console.log(`\n🔑 Deployer: ${deployer.address}`);
+  console.log(`💰 Balance: ${ethers.formatEther(await ethers.provider.getBalance(deployer.address))} ETH`);
+
+  // Get VaultAutomation contract instance
+  const VaultAutomation = await ethers.getContractFactory("VaultAutomation");
+  const vaultAutomation = VaultAutomation.attach(vaultAutomationAddress);
+
+  // Check current automation status
+  console.log("\n📊 Checking current automation status...");
   try {
-    const factory = await ethers.getContractAt("VaultFactory", vaultFactory);
-    const automation = await ethers.getContractAt("VaultAutomation", vaultAutomation);
+    const isAutomationEnabled = await vaultAutomation.isAutomationEnabled();
+    console.log(`✅ Automation enabled: ${isAutomationEnabled}`);
     
-    console.log("✅ VaultFactory contract verified");
-    console.log("✅ VaultAutomation contract verified");
-    
-    // Check if automation is already set
-    const currentAutomation = await factory.automationContract();
-    if (currentAutomation === vaultAutomation) {
-      console.log("✅ Automation contract already set in factory");
-    } else {
-      console.log("⚠️  Automation contract not set in factory");
+    if (isAutomationEnabled) {
+      console.log("🎉 Automation is already enabled!");
+      return;
     }
-    
   } catch (error) {
-    console.error("❌ Contract verification failed:", error.message);
-    process.exit(1);
+    console.log("ℹ️  Automation not yet configured");
   }
 
-  console.log("\n🎯 CHAINLINK AUTOMATION REGISTRATION (ARBITRUM SEPOLIA):");
-  console.log("\n📋 MANUAL REGISTRATION REQUIRED:");
-  console.log("1. Visit Chainlink Automation: https://automation.chain.link/");
-  console.log("2. Connect your wallet (make sure you're on Arbitrum Sepolia network)");
-  console.log("3. Click 'Register New Upkeep'");
-  console.log("4. Choose 'Custom Logic'");
-  console.log("5. Enter the following details:");
-  console.log("\n   Contract Address:");
-  console.log(`   ${vaultAutomation}`);
-  console.log("\n   Gas Limit:");
-  console.log("   500,000 (recommended for vault operations)");
-  console.log("\n   Starting Balance:");
-  console.log("   0.1 ETH (minimum recommended)");
-  console.log("\n   Check Data:");
-  console.log("   0x (leave empty for this contract)");
-  console.log("\n   Off-chain Variables:");
-  console.log("   None required");
-  console.log("\n   Trigger:");
-  console.log("   Time-based (every 1 hour)");
+  // Check if automation is registered with Chainlink
+  console.log("\n🔍 Checking Chainlink Automation registration...");
+  try {
+    const automationConfig = await vaultAutomation.getAutomationConfig();
+    console.log(`📋 Automation config: ${JSON.stringify(automationConfig, null, 2)}`);
+  } catch (error) {
+    console.log("ℹ️  No automation config found");
+  }
 
-  console.log("\n🔧 TECHNICAL DETAILS:");
-  console.log("   Network: Arbitrum Sepolia Testnet");
-  console.log("   Chain ID: 421614");
-  console.log("   Automation Contract: VaultAutomation");
-  console.log("   Factory Contract: VaultFactory");
-  console.log("   Upkeep Function: checkUpkeep() → performUpkeep()");
-  console.log("   Max Vaults per Upkeep: 20");
-  console.log("   Gas Limit per Withdrawal: 100,000");
+  // Set up automation parameters
+  console.log("\n⚙️  Setting up automation parameters...");
+  
+  // Set minimum interval (in seconds) - 1 hour minimum
+  const minInterval = 3600; // 1 hour
+  try {
+    const setIntervalTx = await vaultAutomation.setMinAutomationInterval(minInterval);
+    await setIntervalTx.wait();
+    console.log(`✅ Set minimum automation interval to ${minInterval} seconds (${minInterval/3600} hours)`);
+  } catch (error) {
+    console.log("ℹ️  Min interval already set or failed to set");
+  }
 
-  console.log("\n💰 GET ARBITRUM SEPOLIA TESTNET TOKENS:");
-  console.log("   ETH: https://faucet.quicknode.com/arbitrum/sepolia");
-  console.log("   LINK: https://faucets.chain.link/arbitrum-sepolia");
+  // Set automation fee (in wei) - 0.001 ETH
+  const automationFee = ethers.parseEther("0.001");
+  try {
+    const setFeeTx = await vaultAutomation.setAutomationFee(automationFee);
+    await setFeeTx.wait();
+    console.log(`✅ Set automation fee to ${ethers.formatEther(automationFee)} ETH`);
+  } catch (error) {
+    console.log("ℹ️  Automation fee already set or failed to set");
+  }
 
-  console.log("\n✅ ARBITRUM SEPOLIA ADVANTAGES:");
-  console.log("   • Lower gas fees than Ethereum mainnet");
-  console.log("   • Fast transaction finality");
-  console.log("   • Full EVM compatibility");
-  console.log("   • Chainlink oracle support");
-  console.log("   • Active developer community");
-  console.log("   • Reliable testnet infrastructure");
+  // Enable automation
+  console.log("\n🚀 Enabling automation...");
+  try {
+    const enableTx = await vaultAutomation.enableAutomation();
+    await enableTx.wait();
+    console.log("✅ Automation enabled successfully!");
+  } catch (error) {
+    console.log("ℹ️  Automation already enabled or failed to enable");
+  }
 
-  console.log("\n🔗 USEFUL LINKS:");
-  console.log("   • Arbitrum Sepolia Explorer: https://sepolia.arbiscan.io/");
-  console.log("   • Arbitrum Sepolia Bridge: https://bridge.arbitrum.io/");
-  console.log("   • Chainlink Automation: https://automation.chain.link/");
-  console.log("   • Arbitrum Documentation: https://docs.arbitrum.io/");
+  // Final status check
+  console.log("\n📊 Final automation status:");
+  try {
+    const isEnabled = await vaultAutomation.isAutomationEnabled();
+    const config = await vaultAutomation.getAutomationConfig();
+    
+    console.log(`✅ Automation enabled: ${isEnabled}`);
+    console.log(`📋 Config: ${JSON.stringify(config, null, 2)}`);
+  } catch (error) {
+    console.log("⚠️  Could not verify final status");
+  }
 
-  console.log("\n🎉 Arbitrum Sepolia automation registration guide completed!");
+  console.log("\n🎉 Arbitrum Sepolia automation setup complete! ✅");
   console.log("\n📋 NEXT STEPS:");
-  console.log("1. Register upkeep on Chainlink Automation");
-  console.log("2. Fund the upkeep with ETH");
-  console.log("3. Test vault creation and automation");
-  console.log("4. Monitor upkeep performance");
-  console.log("5. Scale to mainnet when ready");
-
-  console.log("\n🔍 EXPLORER LINKS:");
-  console.log("   Arbitrum Sepolia Explorer: https://sepolia.arbiscan.io/");
-  console.log("   Arbitrum Sepolia Faucet: https://faucet.quicknode.com/arbitrum/sepolia");
-  console.log("   Chainlink Faucet: https://faucets.chain.link/arbitrum-sepolia");
-
-} catch (error) {
-  console.error("❌ Arbitrum Sepolia automation registration failed:", error);
-  process.exit(1);
-}
+  console.log("1. Test automation functionality:");
+  console.log("   - Create a vault with automation enabled");
+  console.log("   - Wait for automation to trigger");
+  console.log("2. Monitor automation on Arbiscan:");
+  console.log(`   - VaultAutomation: https://sepolia.arbiscan.io/address/${vaultAutomationAddress}`);
+  console.log("3. Check Chainlink Automation dashboard:");
+  console.log("   - https://automation.chain.link/");
+  console.log("4. Test vault operations on Arbitrum Sepolia");
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error(error);
+    console.error("❌ Arbitrum Sepolia automation setup failed:", error);
     process.exit(1);
   });

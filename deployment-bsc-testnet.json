@@ -1,0 +1,13 @@
+{
+  "network": "bsc-testnet",
+  "chainId": 97,
+  "vaultFactoryAddress": "0xB025cF008CF4daE512Ec1Eff9556931021c3adEC",
+  "vaultAutomationAddress": "0x0A50711f2bA0d2fE64A661318F180f457F110dF2",
+  "deployer": "0x1bC9567e636eF23dddE2AB11614c0E61452A18c5",
+  "timestamp": "2025-08-02T10:04:44.993Z",
+  "blockNumber": 60393310,
+  "gasUsed": {
+    "automation": "1093274",
+    "factory": "4574481"
+  }
+}

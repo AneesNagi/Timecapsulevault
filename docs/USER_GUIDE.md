@@ -198,9 +198,7 @@ The system automatically withdraws funds when vaults unlock:
 ### Getting Help
 
 #### Documentation
-- Technical Whitepaper: `docs/TECHNICAL_WHITEPAPER.md`
-- API Documentation: `docs/API_REFERENCE.md`
-- Architecture Guide: `docs/ARCHITECTURE.md`
+- For support and latest docs, see the README or open a GitHub issue.
 
 #### Support Channels
 - GitHub Issues: Report bugs and feature requests
@@ -229,7 +227,7 @@ Empty and unlocked vaults can be removed from your dashboard to keep it clean. T
 You can create and manage multiple wallets within the application. Each wallet can have its own vaults and operate independently.
 
 ### Network Selection
-Currently supports Arbitrum Sepolia testnet. Mainnet support coming soon.
+Currently supports Sepolia, Arbitrum Sepolia, and BSC Testnet.
 
 ---
 

@@ -30,7 +30,7 @@ export default function VaultsScreen() {
   const navigation = useNavigation();
   const { colors } = useAppTheme();
   const [refreshing, setRefreshing] = useState(false);
-  const { vaults } = useVault('arbitrum-sepolia');
+  const { vaults } = useVault('bsc-testnet');
   const [filteredVaults, setFilteredVaults] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'locked' | 'unlocked' | 'goals'>('all');

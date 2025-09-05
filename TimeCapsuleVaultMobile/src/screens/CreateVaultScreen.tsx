@@ -64,7 +64,7 @@ export default function CreateVaultScreen() {
     tags: [] as string[],
   });
   const [isAdvanced, setIsAdvanced] = useState(false);
-  const { createNewVault, setSelectedWallet } = useVault('arbitrum-sepolia');
+  const { createNewVault, setSelectedWallet } = useVault('bsc-testnet');
 
   useEffect(() => {
     const init = async () => {

@@ -56,6 +56,7 @@ import {
   TagLeftIcon,
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
+import { createProvider } from '../utils/provider';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
@@ -159,10 +160,11 @@ export const WalletManager = () => {
     ];
   };
 
-  const textColor = 'var(--text-primary)';
-  const mutedTextColor = 'var(--text-secondary)';
+  const bgColor = 'var(--bg-primary)';
   const cardBg = 'var(--card-bg)';
   const borderColor = 'var(--border-color)';
+  const textColor = 'var(--text-primary)';
+  const mutedTextColor = 'var(--text-secondary)';
   
   // Load saved wallets from localStorage
   useEffect(() => {
@@ -246,7 +248,7 @@ export const WalletManager = () => {
       let balance;
       
       try {
-        provider = new ethers.JsonRpcProvider(network.rpc[0]);
+        provider = createProvider(network);
         const connectedWallet = wallet.connect(provider);
         balance = await provider.getBalance(connectedWallet.address);
       } catch (rpcError) {
@@ -306,7 +308,7 @@ export const WalletManager = () => {
       let balance;
       
       try {
-        const provider = new ethers.JsonRpcProvider(network.rpc[0]);
+        const provider = createProvider(network);
         balance = await provider.getBalance(wallet.address);
       } catch (rpcError) {
         console.warn(`Failed to connect to RPC: ${network.rpc[0]}`, rpcError);
@@ -421,7 +423,7 @@ export const WalletManager = () => {
             for (const rpcUrl of network.rpc) {
               try {
                 console.log(`WalletManager: Trying RPC: ${rpcUrl}`);
-                const provider = new ethers.JsonRpcProvider(rpcUrl);
+                const provider = createProvider({ rpc: [rpcUrl], name: 'Custom', chainId: network.chainId });
                 balance = await provider.getBalance(wallet.address);
                 const formattedBalance = ethers.formatEther(balance);
                 console.log(`WalletManager: Success! Balance for ${wallet.address}: ${formattedBalance} ${network.currency}`);
@@ -926,9 +928,9 @@ export const WalletManager = () => {
                                     duration: 5000,
                                   });
                                                   // Open appropriate faucet based on network
-                const faucetUrl = selectedNetwork.id === 'arbitrum-sepolia'
-                  ? 'https://faucet.quicknode.com/arbitrum/sepolia'
-                  : 'https://faucet.quicknode.com/arbitrum/sepolia';
+                const faucetUrl = selectedNetwork.id === 'bsc-testnet' 
+                  ? 'https://testnet.binance.org/faucet-smart'
+                  : 'https://sepoliafaucet.com/';
                 window.open(faucetUrl, '_blank');
                                 }}
                                 colorScheme="blue" 

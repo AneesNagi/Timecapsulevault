@@ -14,6 +14,7 @@ import {
   Text,
   Button,
   SimpleGrid,
+  useColorModeValue,
   Center,
   Heading,
 } from '@chakra-ui/react';
@@ -33,6 +34,7 @@ export const MyVaults = () => {
   const [isCustomizationModalOpen, setIsCustomizationModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'grid' | 'timeline'>('grid');
 
+  const bgColor = 'var(--bg-primary)';
   const textColor = 'var(--text-primary)';
   const mutedTextColor = 'var(--text-secondary)';
 

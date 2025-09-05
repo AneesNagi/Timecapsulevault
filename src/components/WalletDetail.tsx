@@ -51,6 +51,7 @@ import {
   Progress,
 } from '@chakra-ui/react';
 import { ethers } from 'ethers';
+import { createProvider } from '../utils/provider';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FaCopy, FaEye, FaEyeSlash, FaExchangeAlt, FaTrash, FaKey, FaInfoCircle, FaSync, FaCheck, FaGasPump, FaWallet } from 'react-icons/fa';
@@ -177,7 +178,7 @@ export const WalletDetail = () => {
       
       try {
         // Connect to network
-        const provider = new ethers.JsonRpcProvider(network.rpc[0]);
+        const provider = createProvider(network);
         
         // Get balance
         const balanceWei = await provider.getBalance(targetWallet.address);
@@ -252,7 +253,7 @@ export const WalletDetail = () => {
       
       try {
         // Connect to provider
-        const provider = new ethers.JsonRpcProvider(network.rpc[0]);
+        const provider = createProvider(network);
         
         // Get the latest block number
         const latestBlock = await provider.getBlockNumber();
@@ -700,7 +701,7 @@ export const WalletDetail = () => {
                     </HStack>
                       <VStack spacing={2}>
                         <Heading size="lg" color="#ffffff">
-                          {balance} {network?.currency || 'ETH'}
+                          {balance} {network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}
                         </Heading>
                         <Progress 
                           value={Math.min((parseFloat(balance) / 1) * 100, 100)} 
@@ -798,7 +799,7 @@ export const WalletDetail = () => {
                   <CardHeader>
                       <HStack spacing={3}>
                         <Icon as={FaExchangeAlt} color="purple.500" boxSize={6} />
-                    <Heading size="md">Send {network?.currency || 'ETH'}</Heading>
+                    <Heading size="md">Send {network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Heading>
                       </HStack>
                   </CardHeader>
                   <CardBody>
@@ -821,7 +822,7 @@ export const WalletDetail = () => {
                       </FormControl>
 
                       <FormControl isRequired>
-                          <FormLabel color="#e6e6e6" fontWeight="medium">Amount ({network?.currency || 'ETH'})</FormLabel>
+                          <FormLabel color="#e6e6e6" fontWeight="medium">Amount ({network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'})</FormLabel>
                           <InputGroup size="lg">
                           <Input
                             type="number"
@@ -862,7 +863,7 @@ export const WalletDetail = () => {
                             </Button>
                           </InputRightElement>
                         </InputGroup>
-                          <FormHelperText color="#a0a0a0">Available: {balance} {network?.currency || 'ETH'}</FormHelperText>
+                          <FormHelperText color="#a0a0a0">Available: {balance} {network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</FormHelperText>
                       </FormControl>
                       
                       {/* Gas Fee Estimate */}
@@ -887,14 +888,14 @@ export const WalletDetail = () => {
                                                               <GridItem>
                                   <VStack align="start" spacing={2}>
                                     <Text fontSize="sm" color="#a0a0a0" fontWeight="medium">You Send:</Text>
-                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} ETH</Text>
+                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Text>
                                   </VStack>
                                 </GridItem>
                               
                                                               <GridItem>
                                   <VStack align="start" spacing={2}>
                                     <Text fontSize="sm" color="#a0a0a0" fontWeight="medium">Recipient Gets:</Text>
-                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} ETH</Text>
+                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Text>
                                   </VStack>
                                 </GridItem>
                             </Grid>
@@ -908,7 +909,7 @@ export const WalletDetail = () => {
                                       (~${gasEstimate && !isNaN(parseFloat(gasEstimate.gasCostEther)) ? (parseFloat(gasEstimate.gasCostEther) * 2000).toFixed(2) : '0.00'})
                                   </Text>
                               </VStack>
-                                                                  <Text fontSize="lg" fontWeight="bold" color="#ffffff">{gasEstimate.gasCostEther} ETH</Text>
+                                                                  <Text fontSize="lg" fontWeight="bold" color="#ffffff">{gasEstimate.gasCostEther} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Text>
                             </HStack>
                             
                             {parseFloat(amount) > parseFloat(gasEstimate.maxAmount) && (
@@ -946,7 +947,7 @@ export const WalletDetail = () => {
                           transition="all 0.2s"
                         leftIcon={<FaExchangeAlt />}
                       >
-                        Send {amount || 0} ETH
+                        Send {amount || 0} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}
                       </Button>
                     </VStack>
                   </CardBody>
@@ -956,7 +957,7 @@ export const WalletDetail = () => {
               <TabPanel>
                 <EnhancedTransactionHistory 
                   walletAddress={wallet?.address || ''} 
-                  network={wallet?.network || 'arbitrum-sepolia'} 
+                  network={wallet?.network || 'sepolia'} 
                 />
               </TabPanel>
             </TabPanels>

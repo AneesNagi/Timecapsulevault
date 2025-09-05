@@ -3,26 +3,27 @@ import {
   Box,
   Container,
   VStack,
-  HStack,
-  Text,
   Heading,
+  Text,
+  Flex,
   SimpleGrid,
   Stat,
   StatLabel,
   StatNumber,
   StatHelpText,
   StatArrow,
-  Icon,
-  Flex,
-  Badge,
-  Progress,
   Card,
   CardHeader,
   CardBody,
+  Progress,
+  Badge,
+  useColorModeValue,
+  Icon,
+  HStack,
+  Select,
   Grid,
   Center,
   Spinner,
-  Select,
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { 
@@ -94,6 +95,7 @@ export const Dashboard = () => {
   const [goalProgress, setGoalProgress] = useState<GoalProgress[]>([]);
   const [performanceData, setPerformanceData] = useState<PerformanceData[]>([]);
 
+  const bgColor = 'var(--bg-primary)';
   const cardBg = 'var(--card-bg)';
   const borderColor = 'var(--border-color)';
   const textColor = 'var(--text-primary)';

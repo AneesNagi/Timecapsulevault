@@ -24,6 +24,7 @@ import { useState, useEffect } from 'react'
 import React from 'react'
 import { FaBars } from 'react-icons/fa'
 import { ethers } from 'ethers'
+import { createProvider } from '../utils/provider'
 
 import { VaultForm } from './VaultForm'
 import { MyVaults } from './MyVaults'
@@ -106,16 +107,16 @@ function DAppLayout() {
           try {
             // Try multiple RPC endpoints for better reliability
             let balance = null;
-                         for (const rpcUrl of selectedNetwork.rpc) {
-               try {
-                 const provider = new ethers.JsonRpcProvider(rpcUrl);
-                 balance = await provider.getBalance(wallet.address);
-                 break; // Success, stop trying other RPCs
-               } catch (rpcError) {
-                 console.warn(`RPC ${rpcUrl} failed for ${wallet.address}:`, rpcError);
-                 continue; // Try next RPC
-               }
-             }
+            for (const rpcUrl of selectedNetwork.rpc) {
+              try {
+                const provider = createProvider({ rpc: [rpcUrl], name: selectedNetwork.name, chainId: selectedNetwork.chainId });
+                balance = await provider.getBalance(wallet.address);
+                break; // Success, stop trying other RPCs
+              } catch (rpcError) {
+                console.warn(`RPC ${rpcUrl} failed for ${wallet.address}:`, rpcError);
+                continue; // Try next RPC
+              }
+            }
              
              if (balance !== null) {
                return {

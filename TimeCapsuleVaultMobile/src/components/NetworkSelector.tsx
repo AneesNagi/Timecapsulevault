@@ -24,8 +24,10 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 
   const getNetworkColor = (networkId: string) => {
     switch (networkId) {
-      case 'arbitrum-sepolia':
-        return '#28A0F0'; // Arbitrum blue
+      case 'sepolia':
+        return '#627EEA'; // Ethereum blue
+      case 'bsc-testnet':
+        return '#F3BA2F'; // BSC yellow
       default:
         return colors.accent;
     }
@@ -33,8 +35,10 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 
   const getNetworkIcon = (networkId: string) => {
     switch (networkId) {
-      case 'arbitrum-sepolia':
-        return '🔵'; // Arbitrum symbol
+      case 'sepolia':
+        return 'Ξ'; // Ethereum symbol
+      case 'bsc-testnet':
+        return 'B'; // BSC symbol
       default:
         return '?';
     }
@@ -118,7 +122,10 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
             </View>
             
             <Text style={[styles.networkDescription, { color: colors.textSecondary }]}>
-              {network.id === 'arbitrum-sepolia' ? 'Arbitrum Testnet' : 'Unknown Network'}
+              {network.id === 'sepolia' 
+                ? 'Ethereum testnet for testing smart contracts and dApps'
+                : 'Binance Smart Chain testnet for fast, low-cost transactions'
+              }
             </Text>
           </Card.Content>
         </Card>

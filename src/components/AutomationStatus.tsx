@@ -96,12 +96,18 @@ export const AutomationStatus: React.FC<AutomationStatusProps> = ({
   const openBSCScan = () => {
     // Network-specific automation addresses
     const automationAddresses: Record<number, string> = {
-      421614: '0x0000000000000000000000000000000000000000', // TODO: Update with actual Arbitrum Sepolia automation address
+      11155111: '0xAef3405A33560f5CbB6765D867A9D6407E870d6d', // Sepolia
+      421614: '', // Arbitrum Sepolia - will be populated after deployment
+      97: '0x0A50711f2bA0d2fE64A661318F180f457F110dF2', // BSC Testnet
     };
     
     const chainId = selectedNetwork?.chainId as number;
-    const automationAddress = automationAddresses[chainId] || automationAddresses[421614];
-    const baseUrl = 'https://sepolia.arbiscan.io';
+    const automationAddress = automationAddresses[chainId] || automationAddresses[11155111];
+    const baseUrl = chainId === 97 
+      ? 'https://testnet.bscscan.com' 
+      : chainId === 421614
+      ? 'https://sepolia.arbiscan.io'
+      : 'https://sepolia.etherscan.io';
     const url = `${baseUrl}/address/${automationAddress}`;
     window.open(url, '_blank');
   };
@@ -276,10 +282,12 @@ export const AutomationStatus: React.FC<AutomationStatusProps> = ({
                 <Text fontSize="xs" color="var(--text-muted)">
                   • Contract: {(() => {
                     const automationAddresses: Record<number, string> = {
-                      421614: '0x0000000000000000000000000000000000000000', // TODO: Update with actual Arbitrum Sepolia automation address
+                      11155111: '0xAef3405A33560f5CbB6765D867A9D6407E870d6d', // Sepolia
+                      421614: '', // Arbitrum Sepolia - will be populated after deployment
+                      97: '0x0A50711f2bA0d2fE64A661318F180f457F110dF2', // BSC Testnet
                     };
                     const chainId = selectedNetwork?.chainId as number;
-                    return automationAddresses[chainId] || automationAddresses[421614];
+                    return automationAddresses[chainId] || automationAddresses[11155111];
                   })()}
                 </Text>
                 <Text fontSize="xs" color="var(--text-muted)">

@@ -2,18 +2,55 @@ import { TimeCapsuleVaultABI, VaultFactoryABI } from '@/contracts/abis'
 import { parseEther } from 'viem'
 import type { Address } from 'viem'
 
-// Network-specific contract addresses
+// Network-specific contract addresses (env first, then fallback to known test deployments)
+// Optionally, load from deployment JSONs if present in public bundle (vite assets include JSON)
+// Note: For production, prefer env values baked at build time.
 const NETWORK_CONFIGS = {
+  // Sepolia testnet
+  11155111: {
+    vaultFactoryAddress: (import.meta.env.VITE_SEPOLIA_VAULT_FACTORY_ADDRESS || ((): string => {
+      try {
+        // @ts-ignore dynamic import may fail in dev
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const d = require('../../deployment-sepolia.json');
+        return d.vaultFactoryAddress;
+      } catch {
+        return '0x3951c8992405d9668C74B13d954da79D1be46bbB';
+      }
+    })()) as const,
+    ethUsdPriceFeed: '0x694AA1769357215DE4FAC081bf1f309aDC325306' as const, // ETH/USD
+  },
   // Arbitrum Sepolia testnet
   421614: {
-    vaultFactoryAddress: '0x3994B729338b083E50ea0c68364c7030D2Db398A' as const, // Deployed VaultFactory
-    ethUsdPriceFeed: '0x3951c8992405d9668C74B13d954da79D1be46bbB' as const, // MockV3Aggregator Price Feed
+    vaultFactoryAddress: (import.meta.env.VITE_ARB_SEPOLIA_VAULT_FACTORY_ADDRESS || ((): string => {
+      try {
+        // @ts-ignore
+        const d = require('../../deployment-arbitrum-sepolia.json');
+        return d.vaultFactoryAddress;
+      } catch {
+        return '0x333222930ff6d5f8A5127b353422f7AA905458De';
+      }
+    })()) as const, // Deployed VaultFactory
+    ethUsdPriceFeed: '0x2d3bBa5e0A9Fd8EAa45Dcf71A2389b7C12005b1f' as const, // ETH/USD on Arbitrum Sepolia
+  },
+  // BSC testnet
+  97: {
+    vaultFactoryAddress: (import.meta.env.VITE_BSC_TESTNET_VAULT_FACTORY_ADDRESS || ((): string => {
+      try {
+        // @ts-ignore
+        const d = require('../../deployment-bsc-testnet.json');
+        return d.vaultFactoryAddress;
+      } catch {
+        return '0xB025cF008CF4daE512Ec1Eff9556931021c3adEC';
+      }
+    })()) as const,
+    bnbUsdPriceFeed: '0x2514895c72f50D8bd4B4F9b1110F0D6bD2c97526' as const, // BNB/USD
   },
 } as const
 
-// Default to Arbitrum Sepolia
-export const VAULT_FACTORY_ADDRESS = NETWORK_CONFIGS[421614].vaultFactoryAddress
-export const ETH_USD_PRICE_FEED = NETWORK_CONFIGS[421614].ethUsdPriceFeed
+// Default to Sepolia for backward compatibility
+export const VAULT_FACTORY_ADDRESS = NETWORK_CONFIGS[11155111].vaultFactoryAddress
+export const ETH_USD_PRICE_FEED = NETWORK_CONFIGS[11155111].ethUsdPriceFeed
 
 // Chainlink Price Feed ABI
 export const CHAINLINK_PRICE_FEED_ABI = [
@@ -41,7 +78,7 @@ export const CHAINLINK_PRICE_FEED_ABI = [
 
 // Helper function to get network-specific configuration
 export const getNetworkConfig = (chainId: number) => {
-  return NETWORK_CONFIGS[chainId as keyof typeof NETWORK_CONFIGS] || NETWORK_CONFIGS[421614]
+  return NETWORK_CONFIGS[chainId as keyof typeof NETWORK_CONFIGS] || NETWORK_CONFIGS[11155111]
 }
 
 export const getVaultContract = (address: string) => {
@@ -52,7 +89,7 @@ export const getVaultContract = (address: string) => {
 }
 
 export const getVaultFactoryContract = (chainId?: number) => {
-  const config = chainId ? getNetworkConfig(chainId) : NETWORK_CONFIGS[421614]
+  const config = chainId ? getNetworkConfig(chainId) : NETWORK_CONFIGS[11155111]
   return {
     address: config.vaultFactoryAddress,
     abi: VaultFactoryABI,
@@ -60,7 +97,7 @@ export const getVaultFactoryContract = (chainId?: number) => {
 }
 
 export const createVault = (unlockTime: number, targetPrice: number, targetAmount: number, chainId?: number) => {
-  const config = chainId ? getNetworkConfig(chainId) : NETWORK_CONFIGS[421614]
+  const config = chainId ? getNetworkConfig(chainId) : NETWORK_CONFIGS[11155111]
   const priceFeed = 'bnbUsdPriceFeed' in config ? config.bnbUsdPriceFeed : config.ethUsdPriceFeed
   
   return {
@@ -91,7 +128,7 @@ export const getVaultStatus = (vaultAddress: string) => ({
 } as const)
 
 export const getCurrentEthPrice = (chainId?: number) => {
-  const config = chainId ? getNetworkConfig(chainId) : NETWORK_CONFIGS[421614]
+  const config = chainId ? getNetworkConfig(chainId) : NETWORK_CONFIGS[11155111]
   const priceFeed = 'bnbUsdPriceFeed' in config ? config.bnbUsdPriceFeed : config.ethUsdPriceFeed
   
   return {

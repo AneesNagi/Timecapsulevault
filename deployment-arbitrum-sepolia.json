@@ -1,12 +1,13 @@
 {
   "network": "arbitrum-sepolia",
-  "timestamp": "2025-08-19T06:56:18.420Z",
-  "contracts": {
-    "vaultFactory": "0x3994B729338b083E50ea0c68364c7030D2Db398A",
-    "vaultAutomation": "0xB025cF008CF4daE512Ec1Eff9556931021c3adEC"
-  },
-  "deployment": {
-    "factory": "0x3994B729338b083E50ea0c68364c7030D2Db398A",
-    "automation": "0xB025cF008CF4daE512Ec1Eff9556931021c3adEC"
+  "chainId": 421614,
+  "vaultFactoryAddress": "0x333222930ff6d5f8A5127b353422f7AA905458De",
+  "vaultAutomationAddress": "0x86f2c3B87Ef05C43E33dbaAC91D592748F15E43B",
+  "deployer": "0x1bC9567e636eF23dddE2AB11614c0E61452A18c5",
+  "timestamp": "2025-09-05T04:29:59.529Z",
+  "blockNumber": 191036103,
+  "gasUsed": {
+    "automation": "1093301",
+    "factory": "4574566"
   }
 }

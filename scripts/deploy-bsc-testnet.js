@@ -2,18 +2,18 @@ const { ethers } = require("hardhat");
 const fs = require("fs");
 
 async function main() {
-  console.log("🚀 Deploying TimeCapsule Vault to Arbitrum Sepolia...");
+  console.log("🚀 Deploying TimeCapsule Vault to BSC Testnet...");
   
-  // Safety check - ensure we're on Arbitrum Sepolia
+  // Safety check - ensure we're on BSC testnet
   const network = await ethers.provider.getNetwork();
-  if (network.chainId !== 421614n) {
-    throw new Error("This script is for Arbitrum Sepolia deployment only!");
+  if (network.chainId !== 97n) {
+    throw new Error("This script is for BSC testnet deployment only!");
   }
 
   // Get deployer account
   const [deployer] = await ethers.getSigners();
   console.log(`Deploying from: ${deployer.address}`);
-  console.log(`Account balance: ${ethers.formatEther(await ethers.provider.getBalance(deployer.address))} ETH`);
+  console.log(`Account balance: ${ethers.formatEther(await ethers.provider.getBalance(deployer.address))} tBNB`);
 
   // Deploy VaultAutomation first
   console.log("\n📋 Deploying VaultAutomation contract...");
@@ -39,8 +39,8 @@ async function main() {
 
   // Save deployment information
   const deploymentInfo = {
-    network: "arbitrum-sepolia",
-    chainId: 421614,
+    network: "bsc-testnet",
+    chainId: 97,
     vaultFactoryAddress: factoryAddress,
     vaultAutomationAddress: automationAddress,
     deployer: deployer.address,
@@ -53,11 +53,11 @@ async function main() {
   };
 
   fs.writeFileSync(
-    "deployment-arbitrum-sepolia.json",
+    "deployment-bsc-testnet.json",
     JSON.stringify(deploymentInfo, null, 2)
   );
 
-  console.log("\n🎉 Arbitrum Sepolia deployment successful! ✅");
+  console.log("\n🎉 BSC Testnet deployment successful! ✅");
   console.log("\n📋 DEPLOYMENT SUMMARY:");
   console.log(`   VaultFactory: ${factoryAddress}`);
   console.log(`   VaultAutomation: ${automationAddress}`);
@@ -65,21 +65,21 @@ async function main() {
   console.log(`   Block: ${deploymentInfo.blockNumber}`);
   
   console.log("\n🔗 NEXT STEPS:");
-  console.log("1. Verify contracts on Arbiscan:");
-  console.log(`   - VaultFactory: https://sepolia.arbiscan.io/address/${factoryAddress}#code`);
-  console.log(`   - VaultAutomation: https://sepolia.arbiscan.io/address/${automationAddress}#code`);
-  console.log("2. Register with Chainlink Automation:");
+  console.log("1. Verify contracts on BSCScan:");
+  console.log(`   - VaultFactory: https://testnet.bscscan.com/address/${factoryAddress}#code`);
+  console.log(`   - VaultAutomation: https://testnet.bscscan.com/address/${automationAddress}#code`);
+  console.log("2. Register with Chainlink Automation (if available on BSC):");
   console.log("   - Go to https://automation.chain.link/");
   console.log(`   - Register upkeep with address: ${automationAddress}`);
   console.log("3. Update frontend configuration:");
-  console.log(`   - Update Arbitrum Sepolia contract addresses in src/utils/contracts.ts`);
-  console.log("4. Test Arbitrum Sepolia functionality");
-  console.log("5. Get test ETH from Arbitrum Sepolia faucet if needed");
+  console.log(`   - Update BSC testnet contract addresses in src/utils/contracts.ts`);
+  console.log("4. Test BSC testnet functionality");
+  console.log("5. Get test BNB from faucet if needed");
 }
 
 main()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error("❌ Arbitrum Sepolia deployment failed:", error);
+    console.error("❌ BSC testnet deployment failed:", error);
     process.exit(1);
-  });
+  }); 

@@ -9,23 +9,43 @@ export interface SupportedNetwork {
 
 export const SUPPORTED_NETWORKS: SupportedNetwork[] = [
   {
-    id: 'arbitrum-sepolia',
-    name: 'Arbitrum Sepolia Testnet',
+    id: 'sepolia',
+    name: 'Sepolia Testnet',
     rpc: [
-      'https://sepolia-rollup.arbitrum.io/rpc',
-      'https://arbitrum-sepolia.public.blastapi.io',
-      'https://arbitrum-sepolia.drpc.me',
-      'https://rpc.ankr.com/arbitrum_sepolia',
+      process.env.EXPO_PUBLIC_SEPOLIA_RPC_URL || 'https://rpc.sepolia.org',
+      'https://eth-sepolia.public.blastapi.io',
+    ],
+    chainId: 11155111,
+    currency: 'ETH',
+    explorer: 'https://sepolia.etherscan.io',
+  },
+  {
+    id: 'arbitrum-sepolia',
+    name: 'Arbitrum Sepolia',
+    rpc: [
+      process.env.EXPO_PUBLIC_ARBITRUM_SEPOLIA_RPC_URL || 'https://arbitrum-sepolia.public.blastapi.io',
     ],
     chainId: 421614,
     currency: 'ETH',
     explorer: 'https://sepolia.arbiscan.io',
   },
+  {
+    id: 'bsc-testnet',
+    name: 'BSC Testnet',
+    rpc: [
+      process.env.EXPO_PUBLIC_BSC_TESTNET_RPC_URL || 'https://data-seed-prebsc-1-s1.binance.org:8545',
+      'https://data-seed-prebsc-2-s1.binance.org:8545',
+      'https://data-seed-prebsc-1-s2.binance.org:8545',
+      'https://data-seed-prebsc-2-s2.binance.org:8545',
+      'https://bsc-testnet.public.blastapi.io',
+    ],
+    chainId: 97,
+    currency: 'tBNB',
+    explorer: 'https://testnet.bscscan.com',
+  },
 ];
 
 export const getNetworkById = (id: string): SupportedNetwork | undefined =>
-  SUPPORTED_NETWORKS.find(network => network.id === id);
-
-export const getDefaultNetwork = (): SupportedNetwork => SUPPORTED_NETWORKS[0];
+  SUPPORTED_NETWORKS.find((n) => n.id === id);
 
 

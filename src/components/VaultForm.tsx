@@ -4,6 +4,7 @@ import { useMobileOptimization } from '../hooks/useMobileOptimization';
 import { LoadingSpinner } from './LoadingSpinner';
 import { NetworkContext } from './DAppLayout'
 import { ethers } from 'ethers'
+import { createProvider } from '../utils/provider'
 import {
   useToast,
   HStack,
@@ -72,14 +73,14 @@ export const VaultForm = () => {
   const mobileOpt = useMobileOptimization();
   const location = useLocation();
   const navigate = useNavigate();
-  const { network: selectedNetwork } = useContext(NetworkContext);
+  const { network: selectedNetwork, setNetwork } = useContext(NetworkContext);
   const [selectedWallet, setSelectedWallet] = useState<string | null>(null);
   const [wallets, setWallets] = useState<any[]>([]);
   
   // Check if this is the first vault from wallet creation
   const isFirstVault = location.state?.isFirstVault;
   
-  const { createNewVault, createERC20Vault, deposit, depositERC20, currentEthPrice } = useVault()
+  const { createNewVault, createERC20Vault, deposit, depositERC20, currentEthPrice, marketEthPrice } = useVault()
   const [amount, setAmount] = useState<string>('')
   const [unlockYears, setUnlockYears] = useState('')
   const [unlockMonths, setUnlockMonths] = useState('')
@@ -129,11 +130,12 @@ export const VaultForm = () => {
     return selectedNetwork.currency;
   };
 
-  // Helper function for dynamic currency display
   const getAssetName = () => {
     switch (selectedNetwork.id) {
-      case 'arbitrum-sepolia':
+      case 'sepolia':
         return 'ETH';
+      case 'bsc-testnet':
+        return 'BNB';
       default:
         return 'ETH';
     }
@@ -144,10 +146,9 @@ export const VaultForm = () => {
     if (selectedToken && selectedToken.symbol === 'USDT') {
       return 1.00; // USDT is pegged to USD
     }
-    // For native tokens, use the fetched price
-    if (currentEthPrice && Number(currentEthPrice) > 0) {
-      return Number(currentEthPrice) / 1e8;
-    }
+    // Prefer market price for display if available; fallback to Chainlink
+    if (marketEthPrice && Number.isFinite(marketEthPrice)) return marketEthPrice;
+    if (currentEthPrice && Number(currentEthPrice) > 0) return Number(currentEthPrice) / 1e8;
     return 0;
   };
 
@@ -196,7 +197,7 @@ export const VaultForm = () => {
           }
           
           // Fallback: refresh balances manually if localStorage is empty
-          const provider = new ethers.JsonRpcProvider(selectedNetwork.rpc[0]);
+          const provider = createProvider(selectedNetwork);
           console.log('Provider created with RPC:', selectedNetwork.rpc[0]);
           
           const updatedWallets = await Promise.all(
@@ -631,11 +632,7 @@ export const VaultForm = () => {
               </Text>
               <NetworkSelector
                 selectedNetwork={selectedNetwork}
-                onNetworkChange={(network) => {
-                  // Update the network context
-                  const { setNetwork } = useContext(NetworkContext);
-                  setNetwork(network);
-                }}
+                onNetworkChange={setNetwork}
                 size="sm"
                 variant="compact"
               />
@@ -882,7 +879,10 @@ export const VaultForm = () => {
                             </InputRightElement>
                           </InputGroup>
                           <Text mt={2} fontSize="sm" color="#a0a0a0">
-                            Current {getAssetName()} price: {currentEthPrice && Number(currentEthPrice) > 0 ? `$${(Number(currentEthPrice) / 1e8).toFixed(2)}` : 'Loading...'}
+                            Current {getAssetName()} price: {(() => {
+                              const p = getTokenPrice();
+                              return p > 0 ? `$${p.toFixed(2)}` : 'Loading...';
+                            })()}
                           </Text>
                           {isPriceInvalid && (
                             <FormErrorMessage>

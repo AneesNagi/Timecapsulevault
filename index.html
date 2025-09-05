@@ -20,21 +20,18 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="msapplication-TileColor" content="#7f5af0" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
+    
     
     <!-- Manifest -->
     <link rel="manifest" href="/manifest.json" />
     
-    <!-- Apple Touch Icons -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
+    <!-- Apple Touch Icons (matching available assets) -->
+    <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152x152.png" />
     <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144x144.png" />
-    <link rel="apple-touch-icon" sizes="120x120" href="/icons/icon-128x128.png" />
-    <link rel="apple-touch-icon" sizes="114x114" href="/icons/icon-128x128.png" />
-    <link rel="apple-touch-icon" sizes="76x76" href="/icons/icon-96x96.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="96x96" href="/icons/icon-96x96.png" />
     <link rel="apple-touch-icon" sizes="72x72" href="/icons/icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="60x60" href="/icons/icon-72x72.png" />
-    <link rel="apple-touch-icon" sizes="57x57" href="/icons/icon-72x72.png" />
     
     <!-- Standard Favicons -->
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
@@ -44,7 +41,8 @@
 
     
     <!-- Preload Critical Resources -->
-    <link rel="dns-prefetch" href="//sepolia-rollup.arbitrum.io" />
+    <link rel="dns-prefetch" href="//eth-sepolia.g.alchemy.com" />
+    <link rel="dns-prefetch" href="//api.etherscan.io" />
     
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https: wss:; font-src 'self' data:;" />
@@ -64,7 +62,7 @@
             }
           });
           
-          navigator.serviceWorker.register('/sw.js?v=1.0.1')
+          navigator.serviceWorker.register('/sw.js?v=1.1.0')
             .then((registration) => {
               console.log('SW registered: ', registration);
               
