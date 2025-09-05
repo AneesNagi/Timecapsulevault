@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useContext } from 'react';
 import {
   Box,
   VStack,
@@ -57,6 +57,7 @@ import { motion } from 'framer-motion';
 import { FaCopy, FaEye, FaEyeSlash, FaExchangeAlt, FaTrash, FaKey, FaInfoCircle, FaSync, FaCheck, FaGasPump, FaWallet } from 'react-icons/fa';
 import { QRCodeSVG } from 'qrcode.react';
 import { SUPPORTED_NETWORKS } from '../constants/networks.js';
+import { NetworkContext } from './DAppLayout';
 import { estimateGasFee, GasEstimate, sendTransaction } from '../utils/wallet';
 import { EnhancedTransactionHistory } from './EnhancedTransactionHistory';
 import { useMobileOptimization } from '../hooks/useMobileOptimization';
@@ -89,6 +90,7 @@ interface WalletData {
 export const WalletDetail = () => {
   const mobileOpt = useMobileOptimization();
   const { address } = useParams<{ address: string }>();
+  const { network: selectedNetwork } = useContext(NetworkContext);
   const [wallet, setWallet] = useState<WalletData | null>(null);
   const [balance, setBalance] = useState('0');
   const [recipient, setRecipient] = useState('');
@@ -173,7 +175,7 @@ export const WalletDetail = () => {
       const targetWallet = walletToRefresh || wallet;
       if (!targetWallet) return;
       
-      const network = SUPPORTED_NETWORKS.find(n => n.id === targetWallet.network);
+      const network = selectedNetwork || SUPPORTED_NETWORKS.find(n => n.id === targetWallet.network);
       if (!network) return;
       
       try {
@@ -248,7 +250,7 @@ export const WalletDetail = () => {
       setTransactions(storedTransactions);
       
       // Then try to fetch from the blockchain
-      const network = SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
+      const network = selectedNetwork || SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
       if (!network) return;
       
       try {
@@ -433,7 +435,7 @@ export const WalletDetail = () => {
       }
       
       // Connect to network
-      const network = SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
+      const network = selectedNetwork || SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
       if (!network) {
         throw new Error('Network not found');
       }
@@ -453,7 +455,7 @@ export const WalletDetail = () => {
       // Show confirmation toast
       toast({
         title: 'Sending Transaction',
-        description: `Sending ${amount} ETH plus network fee: ${gasEstimate?.gasCostEther || '0'} ETH`,
+        description: `Sending ${amount} ${network.currency} plus network fee: ${gasEstimate?.gasCostEther || '0'} ${network.currency}`,
         status: 'info',
         duration: 3000,
       });
@@ -502,7 +504,7 @@ export const WalletDetail = () => {
       
       toast({
         title: 'Success',
-        description: `Transaction sent successfully. Gas fee: ${gasCost} ETH`,
+        description: `Transaction sent successfully. Gas fee: ${gasCost} ${network.currency}`,
         status: 'success',
         duration: 5000,
       });
@@ -597,7 +599,8 @@ export const WalletDetail = () => {
     );
   }
 
-  const network = SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
+  const network = selectedNetwork || SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
+  const currency = network?.currency || (wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH');
 
   return (
     <Box 
@@ -701,7 +704,7 @@ export const WalletDetail = () => {
                     </HStack>
                       <VStack spacing={2}>
                         <Heading size="lg" color="#ffffff">
-                          {balance} {network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}
+                          {balance} {currency}
                         </Heading>
                         <Progress 
                           value={Math.min((parseFloat(balance) / 1) * 100, 100)} 
@@ -799,7 +802,7 @@ export const WalletDetail = () => {
                   <CardHeader>
                       <HStack spacing={3}>
                         <Icon as={FaExchangeAlt} color="purple.500" boxSize={6} />
-                    <Heading size="md">Send {network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Heading>
+                    <Heading size="md">Send {currency}</Heading>
                       </HStack>
                   </CardHeader>
                   <CardBody>
@@ -822,7 +825,7 @@ export const WalletDetail = () => {
                       </FormControl>
 
                       <FormControl isRequired>
-                          <FormLabel color="#e6e6e6" fontWeight="medium">Amount ({network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'})</FormLabel>
+                          <FormLabel color="#e6e6e6" fontWeight="medium">Amount ({currency})</FormLabel>
                           <InputGroup size="lg">
                           <Input
                             type="number"
@@ -863,7 +866,7 @@ export const WalletDetail = () => {
                             </Button>
                           </InputRightElement>
                         </InputGroup>
-                          <FormHelperText color="#a0a0a0">Available: {balance} {network?.currency || wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</FormHelperText>
+                          <FormHelperText color="#a0a0a0">Available: {balance} {currency}</FormHelperText>
                       </FormControl>
                       
                       {/* Gas Fee Estimate */}
@@ -888,14 +891,14 @@ export const WalletDetail = () => {
                                                               <GridItem>
                                   <VStack align="start" spacing={2}>
                                     <Text fontSize="sm" color="#a0a0a0" fontWeight="medium">You Send:</Text>
-                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Text>
+                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} {currency}</Text>
                                   </VStack>
                                 </GridItem>
                               
                                                               <GridItem>
                                   <VStack align="start" spacing={2}>
                                     <Text fontSize="sm" color="#a0a0a0" fontWeight="medium">Recipient Gets:</Text>
-                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Text>
+                                    <Text fontSize="lg" fontWeight="bold" color="#ffffff">{amount} {currency}</Text>
                                   </VStack>
                                 </GridItem>
                             </Grid>
@@ -909,7 +912,7 @@ export const WalletDetail = () => {
                                       (~${gasEstimate && !isNaN(parseFloat(gasEstimate.gasCostEther)) ? (parseFloat(gasEstimate.gasCostEther) * 2000).toFixed(2) : '0.00'})
                                   </Text>
                               </VStack>
-                                                                  <Text fontSize="lg" fontWeight="bold" color="#ffffff">{gasEstimate.gasCostEther} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}</Text>
+                                                                  <Text fontSize="lg" fontWeight="bold" color="#ffffff">{gasEstimate.gasCostEther} {currency}</Text>
                             </HStack>
                             
                             {parseFloat(amount) > parseFloat(gasEstimate.maxAmount) && (
@@ -943,11 +946,11 @@ export const WalletDetail = () => {
                         }
                           borderRadius="full"
                           boxShadow="lg"
-                          _hover={{ transform: 'translateY(-2px)', boxShadow: 'xl' }}
+                          _hover={{ transform: 'translateY(-2px)' }}
                           transition="all 0.2s"
                         leftIcon={<FaExchangeAlt />}
                       >
-                        Send {amount || 0} {wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH'}
+                        Send {amount || 0} {currency}
                       </Button>
                     </VStack>
                   </CardBody>
@@ -957,7 +960,7 @@ export const WalletDetail = () => {
               <TabPanel>
                 <EnhancedTransactionHistory 
                   walletAddress={wallet?.address || ''} 
-                  network={wallet?.network || 'sepolia'} 
+                  network={network?.id || wallet?.network || 'sepolia'} 
                 />
               </TabPanel>
             </TabPanels>

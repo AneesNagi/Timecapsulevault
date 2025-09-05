@@ -53,7 +53,7 @@ function DAppLayout() {
     const stored = localStorage.getItem('selectedNetwork');
     const parsed = stored ? JSON.parse(stored) : null;
     
-    // Use SUPPORTED_NETWORKS
+    // Use SUPPORTED_NETWORKS with Arbitrum Sepolia first by default
     const networksToUse = SUPPORTED_NETWORKS;
     
     // Validate that the stored network is still in the supported list
@@ -61,7 +61,7 @@ function DAppLayout() {
       return parsed;
     }
     
-    // Default to first network
+    // Default to first network (Arbitrum Sepolia)
     return networksToUse[0];
   });
 

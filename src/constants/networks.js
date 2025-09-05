@@ -1,4 +1,15 @@
 export const SUPPORTED_NETWORKS = [
+  // Default first: Arbitrum Sepolia
+  {
+    id: 'arbitrum-sepolia',
+    name: 'Arbitrum Sepolia',
+    rpc: [
+      import.meta.env.VITE_ARBITRUM_SEPOLIA_RPC_URL || 'https://arbitrum-sepolia.public.blastapi.io',
+    ],
+    chainId: 421614,
+    currency: 'ETH',
+    explorer: 'https://sepolia.arbiscan.io',
+  },
   {
     id: 'sepolia',
     name: 'Sepolia Testnet',
@@ -10,16 +21,6 @@ export const SUPPORTED_NETWORKS = [
     chainId: 11155111,
     currency: 'ETH',
     explorer: 'https://sepolia.etherscan.io',
-  },
-  {
-    id: 'arbitrum-sepolia',
-    name: 'Arbitrum Sepolia',
-    rpc: [
-      import.meta.env.VITE_ARBITRUM_SEPOLIA_RPC_URL || 'https://arbitrum-sepolia.public.blastapi.io',
-    ],
-    chainId: 421614,
-    currency: 'ETH',
-    explorer: 'https://sepolia.arbiscan.io',
   },
   {
     id: 'bsc-testnet',
@@ -35,4 +36,4 @@ export const SUPPORTED_NETWORKS = [
     currency: 'tBNB',
     explorer: 'https://testnet.bscscan.com',
   },
-]; 
+];

@@ -714,8 +714,7 @@ export const WalletManager = () => {
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ duration: 0.3, delay: index * 0.1 }}
                               whileHover={{ 
-                                scale: 1.02, 
-                                boxShadow: 'xl',
+                                scale: 1.02,
                                 y: -5
                               }}
                               cursor="pointer"

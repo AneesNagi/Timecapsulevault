@@ -634,7 +634,7 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
-                whileHover={{ scale: 1.01, boxShadow: 'xl' }}
+                whileHover={{ scale: 1.01 }}
               >
                 <CardBody p={6}>
                   <VStack spacing={4} align="stretch">
