@@ -1,5 +1,5 @@
 import { createPublicClient, http, fallback, type PublicClient } from 'viem'
-import { sepolia, arbitrumSepolia } from 'viem/chains'
+import { arbitrumSepolia } from 'viem/chains'
 import { SUPPORTED_NETWORKS } from '@/constants/networks'
 
 // RPC provider configuration with retry logic
@@ -14,16 +14,6 @@ const createRpcClient = (endpoints: string[], chain: any): PublicClient => {
       }
     ),
   })
-}
-
-// Get the primary RPC client for Sepolia
-export const getSepoliaClient = (): PublicClient => {
-  const sepoliaNetwork = SUPPORTED_NETWORKS.find(network => network.id === 'sepolia')
-  if (!sepoliaNetwork) {
-    throw new Error('Sepolia network not found in configuration')
-  }
-  
-  return createRpcClient(sepoliaNetwork.rpc, sepolia)
 }
 
 // Get the primary RPC client for Arbitrum Sepolia

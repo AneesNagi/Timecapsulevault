@@ -182,21 +182,20 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
       let transactions: Transaction[] = [];
       
       try {
-        // Use Etherscan/BSCScan API for better performance
-        const apiKey = network === 'sepolia' ? 'YourEtherscanApiKey' : 
-                      network === 'arbitrum-sepolia' ? 'YourArbiscanApiKey' :
-                      'YourBscScanApiKey';
-        const baseUrl = network === 'sepolia' 
-          ? 'https://api-sepolia.etherscan.io/api'
-          : network === 'arbitrum-sepolia'
-          ? 'https://api-sepolia.arbiscan.io/api'
-          : 'https://api-testnet.bscscan.com/api';
+        // Only Arbitrum Sepolia explorer API
+        const stored = (() => { try { return JSON.parse(localStorage.getItem('explorerApiKeys') || '{}'); } catch { return {}; } })();
+        const globalKeys = (window as any).__EXPLORER_API_KEYS__ || {};
+        const apiKey = stored.arbiscan || globalKeys.arbiscan || '';
+        const baseUrl = 'https://api-sepolia.arbiscan.io/api';
         
-        const response = await fetch(
-          `${baseUrl}?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`
-        );
+        let response: Response | null = null;
+        if (apiKey) {
+          response = await fetch(
+            `${baseUrl}?module=account&action=txlist&address=${walletAddress}&startblock=0&endblock=99999999&sort=desc&apikey=${apiKey}`
+          );
+        }
         
-        if (response.ok) {
+        if (response && response.ok) {
           const data = await response.json();
           if (data.status === '1' && data.result) {
             transactions = data.result.map((tx: any) => ({
@@ -718,11 +717,7 @@ export const EnhancedTransactionHistory = ({ walletAddress, network }: Transacti
                             variant="ghost"
                             color={textColor}
                             onClick={() => {
-                              const explorerUrl = network === 'sepolia' 
-                                ? `https://sepolia.etherscan.io/tx/${tx.hash}`
-                                : network === 'arbitrum-sepolia'
-                                ? `https://sepolia.arbiscan.io/tx/${tx.hash}`
-                                : `https://testnet.bscscan.com/tx/${tx.hash}`;
+                              const explorerUrl = `https://sepolia.arbiscan.io/tx/${tx.hash}`;
                               window.open(explorerUrl, '_blank');
                             }}
                           />

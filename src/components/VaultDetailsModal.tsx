@@ -94,16 +94,7 @@ export const VaultDetailsModal = ({
   const borderColor = useColorModeValue('var(--border-color)', 'var(--border-color)');
 
   // Helper function for dynamic currency display
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
-  };
+  const getAssetName = () => 'ETH';
 
   const getLockTypeIcon = () => {
     if (isTimeLocked) return FaClock;
@@ -431,7 +422,7 @@ export const VaultDetailsModal = ({
                       </MotionCard>
                     )}
 
-                    {/* Deposit Section */}
+                    {/* Deposit Section (native only in this modal) */}
                     {isLocked && (
                       <MotionCard
                         bg={bgColor}
@@ -445,7 +436,7 @@ export const VaultDetailsModal = ({
                         <CardBody p={4}>
                           <VStack align="stretch" spacing={4}>
                             <Text fontSize="lg" fontWeight="bold" color={textColor}>
-                              Deposit More {getAssetName()}
+                              Deposit More {getAssetName()} (native)
                             </Text>
                             
                             {/* Quick Deposit Buttons */}

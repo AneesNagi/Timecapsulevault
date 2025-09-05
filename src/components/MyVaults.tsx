@@ -14,7 +14,6 @@ import {
   Text,
   Button,
   SimpleGrid,
-  useColorModeValue,
   Center,
   Heading,
 } from '@chakra-ui/react';
@@ -204,7 +203,7 @@ export const MyVaults = () => {
   }
 
   return (
-    <Box className="gradient-bg" minH="100vh" py={8}>
+    <Box className="gradient-bg" bg={bgColor} minH="100vh" py={8}>
       <VStack spacing={8} align="stretch">
         {/* Header with View Toggle */}
         <Box px={6}>
@@ -280,6 +279,7 @@ export const MyVaults = () => {
                   currentPrice={Number(vault.currentPrice) / 1e8}
                   isLocked={vault.isLocked}
                   isAutoWithdrawing={autoWithdrawingVaults.has(vault.address)}
+                  tokenSymbol={(vault as any).tokenSymbol}
                 />
               );
             })}

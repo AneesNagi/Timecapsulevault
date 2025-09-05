@@ -600,7 +600,7 @@ export const WalletDetail = () => {
   }
 
   const network = selectedNetwork || SUPPORTED_NETWORKS.find(n => n.id === wallet.network);
-  const currency = network?.currency || (wallet?.network === 'bsc-testnet' ? 'BNB' : 'ETH');
+  const currency = network?.currency || 'ETH';
 
   return (
     <Box 
@@ -960,7 +960,7 @@ export const WalletDetail = () => {
               <TabPanel>
                 <EnhancedTransactionHistory 
                   walletAddress={wallet?.address || ''} 
-                  network={network?.id || wallet?.network || 'sepolia'} 
+                  network={'arbitrum-sepolia'} 
                 />
               </TabPanel>
             </TabPanels>

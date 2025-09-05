@@ -52,17 +52,18 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
   const [error, setError] = useState<string | null>(null);
   const toast = useToast();
 
-  // Helper function for dynamic currency display
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
+  // Optional network token allowlist (can be extended or loaded from server/env)
+  const TOKEN_ALLOWLIST: Record<string, { address: string; symbol?: string; name?: string }[]> = {
+    // Example placeholders (add your known test tokens here)
+    // 'sepolia': [
+    //   { address: '0x0000000000000000000000000000000000000000', symbol: 'ETH', name: 'Ether' },
+    // ],
+    // 'arbitrum-sepolia': [],
+    // 'bsc-testnet': [],
   };
+
+  // Helper function for dynamic currency display
+  const getAssetName = () => 'ETH';
 
   // Native token option
   const nativeToken: TokenInfo = {
@@ -166,6 +167,24 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
     }
   };
 
+  const handleQuickSelect = async (address: string) => {
+    if (!validateAddress(address)) {
+      toast({ title: 'Invalid address', status: 'error', duration: 3000 });
+      return;
+    }
+    setIsLoading(true);
+    const info = await fetchTokenInfo(address);
+    setIsLoading(false);
+    if (info) {
+      onTokenSelect(info);
+      setTokenInfo(info);
+      setTokenAddress(address);
+      toast({ title: `Selected ${info.symbol}`, status: 'success', duration: 2000 });
+    } else {
+      toast({ title: 'Failed to load token info', status: 'error', duration: 3000 });
+    }
+  };
+
   return (
     <VStack spacing={6} align="stretch" position="relative" zIndex={1}>
       <Box position="relative">
@@ -221,6 +240,27 @@ export const TokenSelector: React.FC<TokenSelectorProps> = ({
         <Text fontSize="sm" color="#a0a0a0" mt={2}>
           Enter the contract address of any ERC-20 token
         </Text>
+
+        {/* Quick picks from allowlist */}
+        <Box mt={4}>
+          <Text fontSize="sm" color="#a0a0a0" mb={2}>Quick picks</Text>
+          <HStack spacing={2} wrap="wrap">
+            {(TOKEN_ALLOWLIST[selectedNetwork.id] || []).length === 0 ? (
+              <Badge colorScheme="gray" variant="subtle">No preset tokens for this network</Badge>
+            ) : (
+              (TOKEN_ALLOWLIST[selectedNetwork.id] || []).map((tk) => (
+                <Badge
+                  key={tk.address}
+                  colorScheme="purple"
+                  cursor="pointer"
+                  onClick={() => handleQuickSelect(tk.address)}
+                >
+                  {tk.symbol || 'Token'}
+                </Badge>
+              ))
+            )}
+          </HStack>
+        </Box>
 
         {/* Error Display */}
         {error && (

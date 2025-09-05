@@ -31,6 +31,11 @@ export interface VaultData {
   isGoalLocked: boolean;
   isLocked: boolean;
   unlockReason: string;
+  // ERC-20 specific (optional)
+  isERC20?: boolean;
+  tokenAddress?: string;
+  tokenSymbol?: string;
+  tokenDecimals?: number;
 }
 
 export const useVault = () => {
@@ -372,6 +377,10 @@ export const useVault = () => {
           lockType,
           isLocked: isLocked,
           unlockReason: unlockReason,
+          isERC20: true,
+          tokenAddress,
+          tokenSymbol,
+          tokenDecimals: Number(tokenDecimals),
         };
       });
     } catch (err) {
@@ -618,7 +627,8 @@ export const useVault = () => {
         console.log('New ERC-20 vault created at:', vaultAddress);
 
         // Refresh vaults list
-        const vaultDetails = await fetchVaultDetails(vaultAddress);
+        // Use ERC-20 fetcher for ERC-20 vaults
+        const vaultDetails = await fetchERC20VaultDetails(vaultAddress);
         if (vaultDetails) {
           setVaults(prevVaults => [...prevVaults, vaultDetails]);
         }
@@ -752,8 +762,8 @@ export const useVault = () => {
       const receipt = await tx.wait();
       console.log('ERC-20 deposit transaction confirmed:', receipt);
 
-      // Update the vault details
-      const updatedVaultDetails = await fetchVaultDetails(vaultAddress);
+      // Update the vault details (ERC-20)
+      const updatedVaultDetails = await fetchERC20VaultDetails(vaultAddress);
       if (updatedVaultDetails) {
         setVaults(prevVaults =>
           prevVaults.map(v => (v.address === vaultAddress ? updatedVaultDetails : v))

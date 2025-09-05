@@ -52,6 +52,7 @@ interface VaultCardProps {
   currentPrice?: number
   isLocked?: boolean
   isAutoWithdrawing?: boolean
+  tokenSymbol?: string
 }
 
 export const VaultCard = ({
@@ -71,7 +72,8 @@ export const VaultCard = ({
   progressPercentage,
   currentPrice,
   isLocked,
-  isAutoWithdrawing
+  isAutoWithdrawing,
+  tokenSymbol
 }: VaultCardProps) => {
   const { getVaultCustomization } = useVaultCustomization();
   const { network: selectedNetwork } = useContext(NetworkContext);
@@ -81,16 +83,7 @@ export const VaultCard = ({
   const formattedGoalUsd = goalAmount && currentPrice ? ((Number(goalAmount) / 1e18) * currentPrice).toFixed(2) : undefined
 
   // Helper function for dynamic currency display
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
-  };
+  const getAssetName = () => tokenSymbol || 'ETH';
 
   // Calculate time remaining
   const getTimeRemaining = () => {
@@ -262,12 +255,12 @@ export const VaultCard = ({
 
         {/* Balance Section */}
         <Box width="full">
-                          <Text fontSize="sm" color="var(--text-secondary)" mb={1}>Balance</Text>
+          <Text fontSize="sm" color="var(--text-secondary)" mb={1}>Balance</Text>
           <HStack spacing={2} alignItems="baseline">
             <Text fontSize="3xl" fontWeight="extrabold" color="var(--accent-color)">
               {parseFloat(formattedBalance).toFixed(4)}
-          </Text>
-                            <Text fontSize="lg" color="var(--text-secondary)" fontWeight="medium">{getAssetName()}</Text>
+            </Text>
+            <Text fontSize="lg" color="var(--text-secondary)" fontWeight="medium">{getAssetName()}</Text>
           </HStack>
         </Box>
 

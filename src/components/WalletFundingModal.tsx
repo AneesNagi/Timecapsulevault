@@ -76,12 +76,8 @@ export const WalletFundingModal: React.FC<WalletFundingModalProps> = ({
 
   const getFaucetUrl = () => {
     switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'https://sepoliafaucet.com/';
-      case 'bsc-testnet':
-        return 'https://testnet.binance.org/faucet-smart';
       default:
-        return 'https://sepoliafaucet.com/';
+        return 'https://faucet.triangleplatform.com/arbitrum/sepolia';
     }
   };
 

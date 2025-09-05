@@ -47,6 +47,7 @@ import { Tooltip } from '@chakra-ui/react';
 import DepositPromptModal from './DepositPromptModal';
 import { TokenSelector } from './TokenSelector';
 import { NetworkSelector } from './NetworkSelector';
+import { FaEthereum, FaCoins } from 'react-icons/fa';
 
 const MotionButton = motion.create(ChakraButton)
 const MotionBox = motion.create(Box, {
@@ -104,6 +105,10 @@ export const VaultForm = () => {
     isValid: boolean;
   } | null>(null);
 
+  // Token balance for the selected wallet + token
+  const [tokenBalance, setTokenBalance] = useState<string>('0');
+  const [isFetchingTokenBalance, setIsFetchingTokenBalance] = useState<boolean>(false);
+
   // Price lock validation state
   const [isPriceInvalid, setIsPriceInvalid] = useState(false);
   const { isOpen: isConfirmOpen, onOpen: onConfirmOpen, onClose: onConfirmClose } = useDisclosure();
@@ -130,15 +135,10 @@ export const VaultForm = () => {
     return selectedNetwork.currency;
   };
 
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
+  const getAssetName = () => 'ETH';
+
+  const getTokenSymbolForDisplay = () => {
+    return selectedToken ? selectedToken.symbol : getAssetName();
   };
 
   const getTokenPrice = () => {
@@ -156,6 +156,38 @@ export const VaultForm = () => {
     if (!address) return '';
     return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
   }
+
+  // Fetch token (or native) balance for the selected wallet
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!selectedWallet || !selectedNetwork) {
+        setTokenBalance('0');
+        return;
+      }
+      try {
+        setIsFetchingTokenBalance(true);
+        const provider = createProvider(selectedNetwork);
+        if (!selectedToken || selectedToken.address === '0x0000000000000000000000000000000000000000') {
+          const bal = await provider.getBalance(selectedWallet);
+          setTokenBalance(ethers.formatEther(bal));
+          return;
+        }
+        const erc20 = new ethers.Contract(
+          selectedToken.address,
+          ['function balanceOf(address) view returns (uint256)'],
+          provider
+        );
+        const raw = await erc20.balanceOf(selectedWallet);
+        setTokenBalance(ethers.formatUnits(raw, selectedToken.decimals));
+      } catch (e) {
+        console.warn('Failed to fetch token balance:', e);
+        setTokenBalance('0');
+      } finally {
+        setIsFetchingTokenBalance(false);
+      }
+    };
+    fetchBalance();
+  }, [selectedWallet, selectedNetwork, selectedToken]);
 
   // Load saved wallets from localStorage and refresh balances
   useEffect(() => {
@@ -719,6 +751,11 @@ export const VaultForm = () => {
                         No wallets found. Please create a wallet first.
                       </Text>
                     )}
+                    {selectedWallet && (
+                      <Text mt={2} fontSize="sm" color="#a0a0a0">
+                        Available: {isFetchingTokenBalance ? '…' : Number(tokenBalance || '0').toFixed(4)} {getTokenSymbolForDisplay()}
+                      </Text>
+                    )}
                   </FormControl>
                 )}
 
@@ -803,6 +840,11 @@ export const VaultForm = () => {
                           <Text color="gray.600" fontWeight="bold">{selectedToken ? selectedToken.symbol : getAssetName()}</Text>
                         </InputRightElement>
                       </InputGroup>
+                      {selectedWallet && (
+                        <Text mt={2} fontSize="sm" color="gray.600">
+                          Available: {isFetchingTokenBalance ? '…' : Number(tokenBalance || '0').toFixed(4)} {getTokenSymbolForDisplay()}
+                        </Text>
+                      )}
                       {isGoalLock && usdGoal && getTokenPrice() > 0 && !isNaN(parseFloat(usdGoal)) ? (
                                                   <Text mt={2} fontSize="sm" color="blue.600">
                             💡 For ${usdGoal} goal: deposit ~{(() => {
@@ -972,7 +1014,17 @@ export const VaultForm = () => {
                     <Heading as="h3" size="md" mb={4} color="#ffffff">Review Vault Details</Heading>
                     <VStack align="start" spacing={3}>
                       <Text color="#ffffff"><b>Wallet:</b> {truncateAddress(selectedWallet || '')}</Text>
-                      <Text color="#ffffff"><b>Token:</b> {selectedToken ? `${selectedToken.symbol} (${selectedToken.name})` : 'Not selected'}</Text>
+                      <HStack>
+                        <Text color="#ffffff"><b>Token:</b></Text>
+                        <HStack>
+                          {selectedToken && selectedToken.address !== '0x0000000000000000000000000000000000000000' ? (
+                            <FaCoins color="#7f5af0" />
+                          ) : (
+                            <FaEthereum color="#7f5af0" />
+                          )}
+                          <Text color="#ffffff">{selectedToken ? `${selectedToken.symbol} (${selectedToken.name})` : 'Not selected'}</Text>
+                        </HStack>
+                      </HStack>
                       <Text color="#ffffff"><b>Lock Type:</b> {isPriceLock ? 'Price Lock' : isGoalLock ? 'Goal Lock (USD)' : 'Time Lock'}</Text>
                       <Text color="#ffffff"><b>Initial Deposit:</b> {amount} {selectedToken ? selectedToken.symbol : getAssetName()}</Text>
                                               {isPriceLock && <Text color="#ffffff"><b>Target Price:</b> ${targetPrice}</Text>}

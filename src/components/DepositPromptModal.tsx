@@ -79,18 +79,7 @@ export const DepositPromptModal: React.FC<DepositPromptModalProps> = ({
 
   // Helper functions for dynamic currency display
 
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'arbitrum-sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
-  };
+  const getAssetName = () => 'ETH';
 
   const customization = getVaultCustomization(vaultAddress);
   const displayName = customization?.name || vaultName || 'Your New Vault';

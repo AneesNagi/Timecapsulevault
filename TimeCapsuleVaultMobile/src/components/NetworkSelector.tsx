@@ -22,27 +22,9 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
     onNetworkChange?.(networkId);
   };
 
-  const getNetworkColor = (networkId: string) => {
-    switch (networkId) {
-      case 'sepolia':
-        return '#627EEA'; // Ethereum blue
-      case 'bsc-testnet':
-        return '#F3BA2F'; // BSC yellow
-      default:
-        return colors.accent;
-    }
-  };
+  const getNetworkColor = (networkId: string) => colors.accent;
 
-  const getNetworkIcon = (networkId: string) => {
-    switch (networkId) {
-      case 'sepolia':
-        return 'Ξ'; // Ethereum symbol
-      case 'bsc-testnet':
-        return 'B'; // BSC symbol
-      default:
-        return '?';
-    }
-  };
+  const getNetworkIcon = (networkId: string) => 'Ξ';
 
   if (compact) {
     return (
@@ -121,12 +103,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
               )}
             </View>
             
-            <Text style={[styles.networkDescription, { color: colors.textSecondary }]}>
-              {network.id === 'sepolia' 
-                ? 'Ethereum testnet for testing smart contracts and dApps'
-                : 'Binance Smart Chain testnet for fast, low-cost transactions'
-              }
-            </Text>
+            <Text style={[styles.networkDescription, { color: colors.textSecondary }]}>Arbitrum L2 testnet</Text>
           </Card.Content>
         </Card>
       ))}

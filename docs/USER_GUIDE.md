@@ -227,7 +227,7 @@ Empty and unlocked vaults can be removed from your dashboard to keep it clean. T
 You can create and manage multiple wallets within the application. Each wallet can have its own vaults and operate independently.
 
 ### Network Selection
-Currently supports Sepolia, Arbitrum Sepolia, and BSC Testnet.
+Currently supports Arbitrum Sepolia only.
 
 ---
 

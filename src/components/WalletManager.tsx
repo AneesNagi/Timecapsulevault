@@ -926,11 +926,8 @@ export const WalletManager = () => {
                                     status: 'info',
                                     duration: 5000,
                                   });
-                                                  // Open appropriate faucet based on network
-                const faucetUrl = selectedNetwork.id === 'bsc-testnet' 
-                  ? 'https://testnet.binance.org/faucet-smart'
-                  : 'https://sepoliafaucet.com/';
-                window.open(faucetUrl, '_blank');
+                                  const faucetUrl = 'https://faucet.triangleplatform.com/arbitrum/sepolia';
+                                  window.open(faucetUrl, '_blank');
                                 }}
                                 colorScheme="blue" 
                                 variant="solid"

@@ -32,16 +32,7 @@ const PriceChart = ({ targetPrice, currentPrice, isPriceLocked }: PriceChartProp
   const textColor = useColorModeValue('gray.600', 'gray.300');
 
   // Helper function for dynamic currency display
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
-  };
+  const getAssetName = () => 'ETH';
 
   // Check if container is ready for chart rendering
   useEffect(() => {

@@ -65,16 +65,7 @@ const VaultPerformanceTracker = ({
   const boxBg = useColorModeValue('white', 'gray.700');
 
   // Helper function for dynamic currency display
-  const getAssetName = () => {
-    switch (selectedNetwork.id) {
-      case 'sepolia':
-        return 'ETH';
-      case 'bsc-testnet':
-        return 'BNB';
-      default:
-        return 'ETH';
-    }
-  };
+  const getAssetName = () => 'ETH';
   
   // Format time elapsed
   const formatTimeElapsed = (seconds: number) => {
